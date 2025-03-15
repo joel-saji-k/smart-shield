@@ -1,0 +1,64 @@
+# Node modules (Angular)
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+.tmp/
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+
+# Angular environment files (if needed)
+src/environments/environment*.ts
+
+# Build outputs
+out/
+build/
+coverage/
+.angular/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.cache
+
+# .NET specific ignores
+bin/
+obj/
+*.user
+*.vs/
+*.vscode/
+*.db
+*.db-shm
+*.db-wal
+
+# .NET package dependencies
+**/node_modules/
+**/packages/
+**/project.lock.json
+**/project.assets.json
+**/bundleconfig.json
+
+# Entity Framework Migrations
+Migrations/
+
+# Logs and temp files
+*.log
+*.tlog
+*.log*
+
+# ASP.NET Secrets and settings
+appsettings.json
+appsettings.Development.json
+secrets.json
+
+# Windows/macOS system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.swp
+*.swo

@@ -1,0 +1,84 @@
+<div class="container-fluid login-header mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding-bottom: 2cm;">
+  <div class="container">
+    <!-- <h1 class="display-3 mb-4 animated slideInDown">Login</h1> -->
+  </div>
+</div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="container btn btn-primary" style="width: fit-content; position: relative;"><i
+    routerLink="/Client/Policies" class='fas fa-arrow-left' style='font-size:24px'></i></div>
+<div class="container-fluid" style="width: fit-content;">
+  <div class="card">
+    <div class="card-details" *ngIf="policy!=null">
+      <h2>{{policy.policyName}}</h2>
+      <hr>
+      <div class="row">
+        <div class="col">
+          <div class="row mt-4">
+            <label class="form-control-label col col-md-5">Policy Type :</label>
+            <div class="col-md-7 mb-4">
+              <input type="text" class="form-control" value="{{ReadTypeName(policy.policytypeId)}}" readonly>
+            </div>
+
+            <label class="form-control-label col col-md-5">Provider : </label>
+            <div class="col-sm-7 mb-4">
+              <input type="text" class="form-control" value="{{ReadCompanyName(policy.companyId)}}" readonly>
+            </div>
+
+            <label class="form-control-label col col-md-5">Time Period :</label>
+            <div class="col-sm-7 mb-4">
+              <input type="text" class="form-control" value="{{policy.timePeriod}}  Months" readonly>
+            </div>
+
+            <label class="form-control-label col col-md-5">Policy Amount :</label>
+            <div class="col-sm-7 mb-4">
+              <input type="text" class="form-control" value="₹&nbsp;{{policy.policyAmount}}" readonly>
+            </div>
+          </div>
+          <p *ngIf="showVerify">
+            <input class="form-control" type="text" placeholder="Agent Referral Code" #referral>&nbsp;
+            <a *ngIf="!con" class="btn btn-primary" (click)="ValidateReferral(referral.value)">VERIFY</a>
+          </p>
+          <button (click)="toggleVerify()" *ngIf="!showVerify" class="button btn btn-primary">Proceed</button>
+        </div>
+        <div class="col" *ngIf="showOverlay">
+          <div class="row mt-4" *ngIf="con">
+            <form class="forms" [formGroup]="cpform" (submit)="submit()">
+
+              <label class="form-control-label col-sm-4">Policy Terms:</label>
+              <div class="col-sm-8 mb-4">
+                <select class="form-select" formControlName="pterm" (change)="set()">
+                  <option *ngFor="let pterm of pterms" [value]="pterm.policyTermId">
+                    {{pterm.period}} Months -{{pterm.terms}} Terms
+                  </option>
+                </select>
+              </div>
+
+              <label class="form-control-label col-sm-4">Nominee :</label>
+              <div class="col-sm-8 mb-4">
+                <select class="form-select" formControlName="nominee">
+                  <option *ngFor="let nominee of nominees" [value]="nominee.nomineeId">{{nominee.nomineeName}}</option>
+                </select>
+              </div>
+
+              <label class="form-control-label col-sm-4">Start Date:</label>
+              <div class="col-sm-8 mb-4">
+                <input class="form-control" type="text" formControlName="startdate" readonly>
+              </div>
+
+              <label class="form-control-label col-sm-4" >Expiry Date:</label>
+              <div class="col-sm-8 mb-4">
+                <input class="form-control" type="text" formControlName="expdate" readonly>
+              </div>
+
+              <label class="form-control-label col-sm-4">No of Terms :</label>
+              <div class="col-sm-8 mb-4">
+                <input class="form-control" type="number" formControlName="counter" readonly>
+              </div>
+              <button type="submit" class="button btn btn-primary" [disabled]="!this.cpform.valid">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

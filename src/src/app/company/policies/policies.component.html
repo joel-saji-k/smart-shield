@@ -1,0 +1,112 @@
+<div class="container-fluid login-header mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding-bottom: 2cm;">
+  <div class="container">
+    <!-- <h1 class="display-3 mb-4 animated slideInDown">Login</h1> -->
+  </div>
+</div>
+<div class="container-fluid">
+  <ul class="nav nav-tabs" style="padding-left: 40%;">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="choice==1" (click)="Changetab(1)">Policies</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="choice==2" (click)="Changetab(2)">Policy Terms</a>
+    </li>
+  </ul>
+  <div class="container-fluid" [class.hidden]="choice!=1">
+    <div class="form_wrapper" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+      <div class="form_container">
+        <div class="title_container">
+          <h2>Add Policy</h2>
+        </div>
+        <div class="row clearfix">
+          <div class="">
+            <form [formGroup]="policyForm" (ngSubmit)="sub()">
+              Policy Type:
+              <div class="input_field">
+              <select formControlName="policyTypeId">
+                <option selected="true" disabled="disabled">SELECT Policy Type</option>
+                <option *ngFor="let ptype of ptypes" [value]="ptype.policytypeId">{{ ptype.policytypeName }}</option>
+              </select>
+              </div>
+              <div class="input_field"> <span><i aria-hidden="true" class="fa fa-user"></i></span>
+                <input type="text" name="name" placeholder="Policy Name" formControlName="policyName" />
+              </div>
+              <div class="text-danger"
+                *ngIf="policyForm.get('policyName').hasError('required')&& (policyForm.get('policyName').touched ||policyForm.get('policyName').dirty )">
+                Policy Name is Required
+              </div>
+              <div class="row clearfix">
+                <div class="col_half">
+                  <div class="input_field">
+                    <input type="number" name="timePeriod" placeholder="Time Period" formControlName="timePeriod" />
+                  </div>
+                </div>
+                <div class="col_half">
+                  <div class="input_field">
+                    <input type="number" name="policyAmount" placeholder="Policy Amount" formControlName="policyAmount"
+                      required />
+                  </div>
+                </div>
+                <div class="form-text text-danger"
+                  *ngIf="policyForm.get('timePeriod').hasError('required') && (policyForm.get('timePeriod').touched || policyForm.get('timePeriod').dirty)">
+                  Time Period is Required
+                </div>
+                <div class="form-text text-danger"
+                  *ngIf="policyForm.get('policyAmount').hasError('required') && (policyForm.get('policyAmount').touched || policyForm.get('policyAmount').dirty)">
+                  Policy Amount is required
+                </div>
+              </div>
+              <input class="button" type="submit" value="Add Policy"
+                style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" [disabled]=" !(policyForm.valid)" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid" [class.hidden]="choice!=2">
+    <div class="form_wrapper" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+      <div class="form_container">
+        <div class="title_container">
+          <h2>Add Policy Term</h2>
+        </div>
+        <div class="row clearfix">
+          <div class="">
+            <form [formGroup]="policytermForm" (ngSubmit)="subTerms()">
+              Policy
+              <select id="formselect" formControlName="policyId" (change)="_autofill(this.policytermForm.get('policyId').value)">
+                <option selected="true" disabled="disabled">SELECT Policy</option>
+                <option *ngFor="let policy of policies" [value]="policy.policyId">{{ policy.policyName }}</option>
+              </select>
+              <div class="row clearfix">
+                <div class="col_half">
+                  <div class="input_field">
+                    Terms
+                    <select id="formselect" formControlName="Terms"
+                      (change)="autofill(this.policytermForm.get('policyId').value,this.policytermForm.get('Terms').value)">
+                      <option *ngFor="let term of terms" [value]="term">{{term}}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col_half">
+                  <div class="input_field">
+                    Premium Amount
+                    <input type="number" name="policyAmount" value="{{premiumAmount}}" formControlName="premiumAmount"
+                      readonly />
+                  </div>
+                </div>
+              </div>
+              <input class="button" type="submit" value="Add Policy Term"
+                style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" [disabled]=" !(policytermForm.valid)" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid login-header mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding-bottom: 2cm;">
+  <div class="container">
+    <!-- <h1 class="display-3 mb-4 animated slideInDown">Login</h1> -->
+  </div>
+</div>

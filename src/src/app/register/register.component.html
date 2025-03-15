@@ -1,0 +1,163 @@
+<div class="container-fluid login-header mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding-bottom: 2cm;">
+  <div class="container">
+    <!-- <h1 class="display-3 mb-4 animated slideInDown">Login</h1> -->
+  </div>
+</div>
+<div class="form_wrapper" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+  <div class="form_container">
+    <div class="title_container">
+      <h2>Registration Form</h2>
+    </div>
+    <div class="row clearfix">
+      <div class="">
+        <form [formGroup]="regForm" (ngSubmit)="register()">
+          <nav class="nav nav-pills nav-justified mb-4">
+            <input type="radio" formControlName="type" value="3" id="rd1">
+            <label for="rd1" class="nav-item nav-link" [class.active]="regForm.get('type').value == '3'"
+              (click)="resetFormWhenTypeChanged('3')">Client</label>
+            <div class="vertical_line"></div>
+
+            <input type="radio" formControlName="type" value="2" id="rd2">
+            <label for="rd2" class="nav-item nav-link" [class.active]="regForm.get('type').value == '2'"
+              (click)="resetFormWhenTypeChanged('2')">Agent</label>
+            <div class="vertical_line"></div>
+
+            <input type="radio" formControlName="type" value="1" id="rd3">
+            <label for="rd3" class="nav-item nav-link" [class.active]="regForm.get('type').value == '1'"
+              (click)="resetFormWhenTypeChanged('1')">Company</label>
+          </nav>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-user"></i></span>
+            <input class="form-control" type="text" name="name" placeholder="User Name" formControlName="username"
+              required
+              [class.is-invalid]="regForm.get('username').hasError('required') && (regForm.get('username').touched || regForm.get('username').dirty)" />
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('username').hasError('required') && (regForm.get('username').touched || regForm.get('username').dirty))">
+            Username is Required!
+          </div>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-envelope"></i></span>
+            <input class="form-control" type="email" name="email" placeholder="Email" formControlName="email" required
+              [class.is-invalid]="(regForm.get('email').hasError('required') && (regForm.get('email').touched || regForm.get('email').dirty)) || (regForm.get('email').hasError('pattern') && (regForm.get('email').touched || regForm.get('email').dirty))" />
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('email').hasError('required') && (regForm.get('email').touched || regForm.get('email').dirty))">
+            Email is Required!
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('email').hasError('pattern') && (regForm.get('email').touched || regForm.get('email').dirty))">
+            Invalid Email!
+          </div>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-lock"></i></span>
+            <input class="form-control" type="password" name="password" placeholder="Password"
+              formControlName="password" required
+              [class.is-invalid]="regForm.get('password').hasError('required') && (regForm.get('password').touched || regForm.get('password').dirty || regForm.get('repassword').touched || regForm.get('repassword').dirty)" />
+            <input class="form-control" type="password" name="password" placeholder="Re-type Password"
+              formControlName="repassword" required
+              [class.is-invalid]="!regForm.get('password').hasError('required') && regForm.get('password').value != regForm.get('repassword').value && regForm.get('repassword').touched" />
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('password').hasError('required') && (regForm.get('password').touched || regForm.get('password').dirty || regForm.get('repassword').touched || regForm.get('repassword').dirty))">
+            Password is required!
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(!regForm.get('password').hasError('required') && regForm.get('password').value != regForm.get('repassword').value && regForm.get('repassword').touched)">
+            Passwords do not match!
+          </div>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-user"></i></span>
+            <input class="form-control" type="text" name="name"
+              [placeholder]="formOwner != '1' ? 'Full Name' : 'Company Name'" formControlName="name"
+              [class.is-invalid]="regForm.get('name').hasError('required') && (regForm.get('name').touched || regForm.get('name').dirty)" />
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('name').hasError('required') && (regForm.get('name').touched || regForm.get('name').dirty))">
+            Name Required!
+          </div>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-phone"></i></span>
+            <input class="form-control" type="text" placeholder="Phone Number" formControlName="phone" name="phone"
+              required
+              [class.is-invalid]="regForm.get('phone').hasError('required') && (regForm.get('phone').touched || regForm.get('phone').dirty)">
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('phone').hasError('required') && (regForm.get('phone').touched || regForm.get('phone').dirty))">
+            Phone Number Required!
+          </div>
+
+          <div class="input-group mt-3">
+            <span class="input-group-text"><i aria-hidden="true" class="fa fa-address-card"></i></span>
+            <input class="form-control" type="text" placeholder="Address" formControlName="address" name="address"
+              maxlength="50"
+              [class.is-invalid]="regForm.get('address').hasError('required') && (regForm.get('address').touched || regForm.get('address').dirty)">
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('address').hasError('required') && (regForm.get('address').touched || regForm.get('address').dirty))">
+            Address Required!
+          </div>
+
+          <div class="row mt-3" id="gen" *ngIf="formOwner != '1'">
+            <div class="col-sm-4 btn-check-label">Gender:</div>
+            <div class="col-sm-8 btn-group ">
+              <input class="btn-check" type="radio" formControlName="gender" value="Male" id="rd4">
+              <label for="rd4" class="btn btn-outline-primary">Male</label>
+              <input class="btn-check" type="radio" formControlName="gender" value="Female" id="rd5">
+              <label for="rd5" class="btn btn-outline-primary">Female</label>
+              <input class="btn-check" type="radio" formControlName="gender" value="Others" id="rd6">
+              <label for="rd6" class="btn btn-outline-primary">Others</label>
+            </div>
+          </div>
+
+          <div class="row mt-3" *ngIf="formOwner != '1'">
+            <div class="col-sm-4 btn-check-label">Date of Birth:</div>
+            <div class="col-sm-8">
+              <input class="form-control" type="date" formControlName="dob" name="dob" [max]="eligibleDate"
+                [class.is-invalid]="(regForm.get('dob').hasError('required') )&& (regForm.get('dob').touched || regForm.get('dob').dirty)">
+            </div>
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!(regForm.get('dob').hasError('required') && (regForm.get('dob').touched || regForm.get('dob').dirty))">
+            Date of Birth Required!
+          </div>
+
+          <div class="row mt-3">
+            <label class="col-sm-4 btn-check-label" for="pic">Profile Pic:</label>
+            <div class="col-sm-8">
+              <input class="form-control"  id="pic" type="file" name="pic" (change)="FileChange($event)"
+                [class.is-invalid]="(uploadSizeError || uploadTypeError) || (regForm.get('upload').touched && regForm.get('upload').hasError('required')) "
+                formControlName="upload">
+            </div>
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!uploadTypeError">
+            Image should be of (JPG or JPEG or PNG Format)
+          </div>
+          <div class="form-text text-danger"
+            [class.hidden]="!uploadSizeError">
+            Image should be of size below 2MB
+          </div>
+
+          <div class="mt-4 mb-4">
+            <input class="form-check-input mr-2" type="checkbox" id="cb1" formControlName="checkbox">
+            <label class="form-check-label" for="cb1">I agree with terms and conditions</label>
+          </div>
+          <input *ngIf=" this.formOwner=='1'" class="button" type="submit" value="Register"
+            style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;"
+            [disabled]="!regForm.valid && !regForm.get('gender').hasError('required')" />
+          <input *ngIf="this.formOwner!='1'" class="button" type="submit" value="Register"
+            style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" [disabled]=" !(regForm.valid)" />
+
+        </form>
+        <hr>
+        <div class="login_link">Already Registerd? <a routerLink="/Login">&nbsp;Login</a></div>
+      </div>
+    </div>
+  </div>
+</div>
