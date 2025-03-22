@@ -4,9 +4,10 @@ import { ClientService } from 'src/app/services/Client/client.service';
 import { UserService } from 'src/app/services/User/user.service';
 
 @Component({
-  selector: 'app-clienthome',
-  templateUrl: './clienthome.component.html',
-  styleUrls: ['./clienthome.component.scss'],
+    selector: 'app-clienthome',
+    templateUrl: './clienthome.component.html',
+    styleUrls: ['./clienthome.component.scss'],
+    standalone: false
 })
 export class ClienthomeComponent implements OnInit {
   clientName: string;

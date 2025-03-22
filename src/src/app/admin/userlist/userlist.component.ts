@@ -5,9 +5,10 @@ import { StatusEnum } from 'src/app/enum/user-status-enum';
 import { Router } from '@angular/router';
 import { UserTypeEnum } from 'src/app/enum/user-type-enum';
 @Component({
-  selector: 'app-userlist',
-  templateUrl: './userlist.component.html',
-  styleUrls: ['./userlist.component.scss']
+    selector: 'app-userlist',
+    templateUrl: './userlist.component.html',
+    styleUrls: ['./userlist.component.scss'],
+    standalone: false
 })
 export class UserlistComponent implements OnInit {
   users: User[] = [];

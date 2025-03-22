@@ -11,9 +11,10 @@ import { AdminService } from 'src/app/services/Admin/admin.service';
 import { CompanyService } from 'src/app/services/Company/company.service';
 import { environment } from 'src/environments/environment.development';
 @Component({
-  selector: 'app-view',
-  templateUrl: './view.component.html',
-  styleUrls: ['./view.component.scss']
+    selector: 'app-view',
+    templateUrl: './view.component.html',
+    styleUrls: ['./view.component.scss'],
+    standalone: false
 })
 export class CompanyViewComponent implements OnInit {
   choice: number;

@@ -6,9 +6,10 @@ import { UserService } from 'src/app/services/User/user.service';
 
 
 @Component({
-  selector: 'app-adminhome',
-  templateUrl: './adminhome.component.html',
-  styleUrls: ['./adminhome.component.scss']
+    selector: 'app-adminhome',
+    templateUrl: './adminhome.component.html',
+    styleUrls: ['./adminhome.component.scss'],
+    standalone: false
 })
 export class AdminhomeComponent implements OnInit {
   users : User[] = [];

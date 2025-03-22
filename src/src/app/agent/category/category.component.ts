@@ -16,9 +16,10 @@ import { AgentService } from 'src/app/services/Agent/agent.service';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
-  selector: 'app-category',
-  templateUrl: './category.component.html',
-  styleUrls: ['./category.component.scss']
+    selector: 'app-category',
+    templateUrl: './category.component.html',
+    styleUrls: ['./category.component.scss'],
+    standalone: false
 })
 export class CategoryComponent implements OnInit {
 

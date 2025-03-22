@@ -6,9 +6,10 @@ import { Policytype } from 'src/app/models/policytype';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-policies',
-  templateUrl: './policies.component.html',
-  styleUrls: ['./policies.component.css']
+    selector: 'app-policies',
+    templateUrl: './policies.component.html',
+    styleUrls: ['./policies.component.css'],
+    standalone: false
 })
 export class CPoliciesComponent implements OnInit {
   policies: Policy[] = [];

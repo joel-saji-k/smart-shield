@@ -5,9 +5,10 @@ import { Client } from 'src/app/models/client';
 import { Nominee } from 'src/app/models/nominee';
 import { ClientService } from 'src/app/services/Client/client.service';
 @Component({
-  selector: 'app-nominee',
-  templateUrl: './nominee.component.html',
-  styleUrls: ['./nominee.component.scss']
+    selector: 'app-nominee',
+    templateUrl: './nominee.component.html',
+    styleUrls: ['./nominee.component.scss'],
+    standalone: false
 })
 export class NomineeComponent implements OnInit {
 

@@ -13,9 +13,10 @@ import { UserService } from 'src/app/services/User/user.service';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
-  selector: 'app-policies',
-  templateUrl: './policies.component.html',
-  styleUrls: ['./policies.component.css']
+    selector: 'app-policies',
+    templateUrl: './policies.component.html',
+    styleUrls: ['./policies.component.css'],
+    standalone: false
 })
 export class PoliciesComponent implements OnInit {
   policyForm: FormGroup;

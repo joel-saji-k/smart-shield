@@ -5,9 +5,10 @@ import { Policytype } from 'src/app/models/policytype';
 import { AdminService } from 'src/app/services/Admin/admin.service';
 
 @Component({
-  selector: 'app-policytypes',
-  templateUrl: './policytypes.component.html',
-  styleUrls: ['./policytypes.component.scss']
+    selector: 'app-policytypes',
+    templateUrl: './policytypes.component.html',
+    styleUrls: ['./policytypes.component.scss'],
+    standalone: false
 })
 export class PolicytypesComponent implements OnInit {
   ptypes : Policytype[] = [];

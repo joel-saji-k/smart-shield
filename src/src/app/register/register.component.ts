@@ -9,9 +9,10 @@ import { StatusEnum } from '../enum/user-status-enum';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css']
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.css'],
+    standalone: false
 })
 export class RegisterComponent implements OnInit {
   readonly maxSize = 2 * 1024 * 1024;

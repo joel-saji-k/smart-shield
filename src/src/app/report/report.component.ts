@@ -17,9 +17,10 @@ import { Policyterm } from '../models/policyterm';
 import { AgentService } from '../services/Agent/agent.service';
 
 @Component({
-  selector: 'app-report',
-  templateUrl: './report.component.html',
-  styleUrls: ['./report.component.css']
+    selector: 'app-report',
+    templateUrl: './report.component.html',
+    styleUrls: ['./report.component.css'],
+    standalone: false
 })
 export class ReportComponent implements OnInit {
 

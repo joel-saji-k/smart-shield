@@ -7,9 +7,10 @@ import { User } from '../models/user';
 import { UserService } from '../services/User/user.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent {
   reactiveForm: FormGroup;

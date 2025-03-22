@@ -11,9 +11,10 @@ import { Policytype } from 'src/app/models/policytype';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-details',
-  templateUrl: './details.component.html',
-  styleUrls: ['./details.component.css']
+    selector: 'app-details',
+    templateUrl: './details.component.html',
+    styleUrls: ['./details.component.css'],
+    standalone: false
 })
 export class DetailsComponent implements OnInit {
   clientId: number;

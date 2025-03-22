@@ -4,9 +4,10 @@ import { CompanyService } from 'src/app/services/Company/company.service';
 import { UserService } from 'src/app/services/User/user.service';
 
 @Component({
-  selector: 'app-companyhome',
-  templateUrl: './companyhome.component.html',
-  styleUrls: ['./companyhome.component.scss']
+    selector: 'app-companyhome',
+    templateUrl: './companyhome.component.html',
+    styleUrls: ['./companyhome.component.scss'],
+    standalone: false
 })
 export class CompanyhomeComponent implements OnInit {
   companyName: string;

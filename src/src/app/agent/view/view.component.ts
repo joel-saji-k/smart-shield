@@ -15,9 +15,10 @@ export class Imageset {
 }
 
 @Component({
-  selector: 'app-view',
-  templateUrl: './view.component.html',
-  styleUrls: ['./view.component.css']
+    selector: 'app-view',
+    templateUrl: './view.component.html',
+    styleUrls: ['./view.component.css'],
+    standalone: false
 })
 export class AgentViewComponent implements OnInit {
   choice: number;

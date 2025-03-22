@@ -5,9 +5,10 @@ import { Feedback } from 'src/app/models/feedback';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
-  selector: 'app-contact',
-  templateUrl: './contact.component.html',
-  styleUrls: ['./contact.component.scss']
+    selector: 'app-contact',
+    templateUrl: './contact.component.html',
+    styleUrls: ['./contact.component.scss'],
+    standalone: false
 })
 export class ContactComponent {
   contactForm : FormGroup = new FormGroup({feed : new FormControl(null,Validators.required)});

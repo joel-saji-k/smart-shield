@@ -12,9 +12,10 @@ import { AgentService } from 'src/app/services/Agent/agent.service';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-view',
-  templateUrl: './view.component.html',
-  styleUrls: ['./view.component.scss']
+    selector: 'app-view',
+    templateUrl: './view.component.html',
+    styleUrls: ['./view.component.scss'],
+    standalone: false
 })
 export class ClientViewComponent implements OnInit {
 

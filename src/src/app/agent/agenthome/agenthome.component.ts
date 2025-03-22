@@ -6,9 +6,10 @@ import { CompanyService } from 'src/app/services/Company/company.service';
 import { UserService } from 'src/app/services/User/user.service';
 
 @Component({
-  selector: 'app-agenthome',
-  templateUrl: './agenthome.component.html',
-  styleUrls: ['./agenthome.component.scss']
+    selector: 'app-agenthome',
+    templateUrl: './agenthome.component.html',
+    styleUrls: ['./agenthome.component.scss'],
+    standalone: false
 })
 export class AgenthomeComponent implements OnInit {
   agentName: string;

@@ -6,9 +6,10 @@ import { Feedback } from 'src/app/models/feedback';
 import { environment } from 'src/environments/environment.development';
 
 @Component({
-  selector: 'app-footer',
-  templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
+    selector: 'app-footer',
+    templateUrl: './footer.component.html',
+    styleUrls: ['./footer.component.scss'],
+    standalone: false
 })
 export class FooterComponent implements OnInit {
   role : string;

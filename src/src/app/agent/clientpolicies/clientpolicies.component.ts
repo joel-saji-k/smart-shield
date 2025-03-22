@@ -11,9 +11,10 @@ import { AgentService } from 'src/app/services/Agent/agent.service';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-clientpolicies',
-  templateUrl: './clientpolicies.component.html',
-  styleUrls: ['./clientpolicies.component.scss']
+    selector: 'app-clientpolicies',
+    templateUrl: './clientpolicies.component.html',
+    styleUrls: ['./clientpolicies.component.scss'],
+    standalone: false
 })
 export class ClientpoliciesComponent implements OnInit {
   cpolicies: Clientpolicy[];

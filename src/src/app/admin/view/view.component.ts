@@ -23,9 +23,10 @@ class Policieswithterm implements Policy {
 }
 
 @Component({
-  selector: 'app-view',
-  templateUrl: './view.component.html',
-  styleUrls: ['./view.component.css']
+    selector: 'app-view',
+    templateUrl: './view.component.html',
+    styleUrls: ['./view.component.css'],
+    standalone: false
 })
 
 export class AdminViewComponent implements OnInit {

@@ -7,9 +7,10 @@ import { Payments } from 'src/app/models/payment';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-payment',
-  templateUrl: './payment.component.html',
-  styleUrls: ['./payment.component.css']
+    selector: 'app-payment',
+    templateUrl: './payment.component.html',
+    styleUrls: ['./payment.component.css'],
+    standalone: false
 })
 export class PaymentComponent implements OnInit {
 

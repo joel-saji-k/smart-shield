@@ -9,9 +9,10 @@ import { Premium } from 'src/app/models/premium';
 import { ClientService } from 'src/app/services/Client/client.service';
 
 @Component({
-  selector: 'app-penalty',
-  templateUrl: './penalty.component.html',
-  styleUrls: ['./penalty.component.css']
+    selector: 'app-penalty',
+    templateUrl: './penalty.component.html',
+    styleUrls: ['./penalty.component.css'],
+    standalone: false
 })
 export class PenaltyComponent implements OnInit {
 
