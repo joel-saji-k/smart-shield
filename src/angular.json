@@ -76,7 +76,7 @@
               "browserTarget": "SmartShield:build:production"
             },
             "development": {
-              "browserTarget": "SmartShield:build:development"
+              "buildTarget": "SmartShield:build"
             }
           },
           "defaultConfiguration": "development"
