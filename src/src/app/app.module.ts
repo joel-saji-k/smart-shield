@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -41,53 +41,45 @@ import { NgxPrintModule } from 'ngx-print';
 import { DenialComponent } from './pages/denial/denial.component';
 
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    FooterComponent,
-    HomeComponent,
-    AboutComponent,
-    ContactComponent,
-    FeaturesComponent,
-    ErrorComponent,
-    AdminhomeComponent,
-    ClienthomeComponent,
-    AgenthomeComponent,
-    CompanyhomeComponent,
-    LoginComponent,
-    RegisterComponent,
-    ProfileComponent,
-    PolicytypesComponent,
-    UserlistComponent,
-    PoliciesComponent,
-    ClientpoliciesComponent,
-    CategoryComponent,
-    ReportComponent,
-    NomineeComponent,
-    CPoliciesComponent,
-    ReportComponent,
-    AdminViewComponent,
-    CompanyViewComponent,
-    AgentViewComponent,
-    DetailsComponent,
-    PaymentComponent,
-    ClientViewComponent,
-    PenaltyComponent,
-    DenialComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    NgxPrintModule
-
-  ],
-  providers: [UserService,DatePipe],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HeaderComponent,
+        FooterComponent,
+        HomeComponent,
+        AboutComponent,
+        ContactComponent,
+        FeaturesComponent,
+        ErrorComponent,
+        AdminhomeComponent,
+        ClienthomeComponent,
+        AgenthomeComponent,
+        CompanyhomeComponent,
+        LoginComponent,
+        RegisterComponent,
+        ProfileComponent,
+        PolicytypesComponent,
+        UserlistComponent,
+        PoliciesComponent,
+        ClientpoliciesComponent,
+        CategoryComponent,
+        ReportComponent,
+        NomineeComponent,
+        CPoliciesComponent,
+        ReportComponent,
+        AdminViewComponent,
+        CompanyViewComponent,
+        AgentViewComponent,
+        DetailsComponent,
+        PaymentComponent,
+        ClientViewComponent,
+        PenaltyComponent,
+        DenialComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        BrowserAnimationsModule,
+        NgxPrintModule], providers: [UserService, DatePipe, provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {
 
 }
