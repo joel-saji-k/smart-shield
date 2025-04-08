@@ -184,11 +184,11 @@ namespace InsuranceBackend.Services
             }
         }
 
-        public async Task<List<PolicyModel>> GetAllPolicies()
+        public async Task<List<PolicyModel>> GetAllPolicies(int companyId)
         {
             try
             {
-                var policies = await _context.Policies.ToListAsync();
+                var policies = await _context.Policies.Where(a=> companyId != 0 ? a.CompanyId == companyId : a.CompanyId > 0).ToListAsync();
                 return [..policies.Select(x => new PolicyModel
             {
                 PolicyId = x.PolicyId,

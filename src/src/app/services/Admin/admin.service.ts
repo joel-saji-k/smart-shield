@@ -61,8 +61,8 @@ export class AdminService {
     return this.http.get<Policytype[]>(this.baseApiUrl + '/api/Admin/GetAllTypes');
   }
 
-  ViewAllPolicies(): Observable<Policy[]> {
-    return this.http.get<Policy[]>(this.baseApiUrl + '/api/Admin/GetAllPolicies');
+  ViewAllPolicies(companyId : number): Observable<Policy[]> {
+    return this.http.get<Policy[]>(this.baseApiUrl + `/api/Admin/GetAllPolicies?companyId=${companyId}`);
   }
 
   ViewAllMaturities(): Observable<Maturity[]> {

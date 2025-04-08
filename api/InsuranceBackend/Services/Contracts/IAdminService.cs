@@ -11,7 +11,7 @@ namespace InsuranceBackend.Services.Contracts
         Task<PolicyTypeModel> AddPolicytype(PolicyTypeModel policyType);
         Task ChangeUserStatus(UserModel user);
         Task ChangeActorStatus(int userId, UserTypeEnum type, StatusEnum status);
-        Task<List<PolicyModel>> GetAllPolicies();
+        Task<List<PolicyModel>> GetAllPolicies(int companyId);
         Task<List<MaturityModel>> GetAllMaturities();
         Task<List<PolicyTypeModel>> GetAllPoliciesTypes();
         Task<List<FeedbackModel>> GetAllFeedbacks();

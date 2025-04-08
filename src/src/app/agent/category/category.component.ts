@@ -101,7 +101,7 @@ export class CategoryComponent implements OnInit {
       clientPolicyId: clientpolicyId,
       dod: this.datePipe.transform(currentDate, 'shortDate'),
       startDate: cp.startDate,
-      claimAmount: (p.policyAmount * 1.75)
+      claimAmount: (p.policyAmount)
     };
     if (window.confirm("You Are About to Mark ClientPolicy with ID: '" + clientdeath.clientPolicyId + "' as Deprecated(ClientDeath)\nAction cannot be Undone")) {
       this.agentservices.AddClientDeath(clientdeath);

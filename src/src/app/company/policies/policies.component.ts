@@ -30,6 +30,7 @@ export class PoliciesComponent implements OnInit {
   premiumAmount: number;
   fullperiod: number;
   terms: number[];
+  companyId : number;
 
   constructor(private adminservice: AdminService, private companyservice: CompanyService,private route : Router) { }
 
@@ -37,6 +38,7 @@ export class PoliciesComponent implements OnInit {
     if (this.readSession('companyId') == null) {
       this.route.navigate(['/Denial']);
     }
+    this.companyId = +this.readSession('companyId');
     this.policyForm = new FormGroup({
       companyId: new FormControl(null),
       policyTypeId: new FormControl(null, Validators.required),
@@ -55,7 +57,7 @@ export class PoliciesComponent implements OnInit {
       this.ptypes = res;
     });
     this.policies = [];
-    this.adminservice.ViewAllPolicies().subscribe(res => {
+    this.adminservice.ViewAllPolicies(this.companyId).subscribe(res => {
       res.forEach(p=>{
         if(p.status != 2)
         {

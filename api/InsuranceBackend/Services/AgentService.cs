@@ -214,36 +214,40 @@ namespace InsuranceBackend.Services
                     Dod = dbcd.Dod,
                     StartDate = dbcd.StartDate
                 };
-                ValidateClientPolicy(clientDeath.ClientPolicyId);
-                _context.ClientDeaths.Add(new ClientDeath
+                if (ValidateClientPolicy(clientDeath.ClientPolicyId))
                 {
-                    ClientPolicyId = clientDeath.ClientPolicyId,
-                    ClaimAmount = clientDeath.ClaimAmount,
-                    ClientDeathId = clientDeath.ClientDeathId,
-                    Dod = clientDeath.Dod,
-                    StartDate = clientDeath.StartDate
-                });
-
-                var clientPolicy = _context.ClientPolicies.First(p => p.ClientPolicyId == clientDeath.ClientPolicyId);
-                if (clientPolicy != null)
-                {
-                    clientPolicy.Status = ClientPolicyStatusEnum.Mature;
-                    _context.ClientPolicies.Update(clientPolicy);
-                }
-
-                await _context.SaveChangesAsync();
-                var result = _context.ClientDeaths.OrderBy(d => d.ClientDeathId).LastOrDefault();
-                if (result != null)
-                    return new ClientDeathModel
+                    _context.ClientDeaths.Add(new ClientDeath
                     {
-                        StartDate = result.StartDate,
-                        ClientDeathId = result.ClientDeathId,
-                        ClaimAmount = result.ClaimAmount,
-                        ClientPolicyId = result.ClientPolicyId,
-                        Dod = result.Dod
-                    };
+                        ClientPolicyId = clientDeath.ClientPolicyId,
+                        ClaimAmount = clientDeath.ClaimAmount,
+                        ClientDeathId = clientDeath.ClientDeathId,
+                        Dod = clientDeath.Dod,
+                        StartDate = clientDeath.StartDate
+                    });
+
+                    var clientPolicy = _context.ClientPolicies.First(p => p.ClientPolicyId == clientDeath.ClientPolicyId);
+                    if (clientPolicy != null)
+                    {
+                        clientPolicy.Status = ClientPolicyStatusEnum.Mature;
+                        _context.ClientPolicies.Update(clientPolicy);
+                    }
+
+                    await _context.SaveChangesAsync();
+                    var result = _context.ClientDeaths.OrderBy(d => d.ClientDeathId).LastOrDefault();
+                    if (result != null)
+                        return new ClientDeathModel
+                        {
+                            StartDate = result.StartDate,
+                            ClientDeathId = result.ClientDeathId,
+                            ClaimAmount = result.ClaimAmount,
+                            ClientPolicyId = result.ClientPolicyId,
+                            Dod = result.Dod
+                        };
+                    else
+                        throw new Exception("Client Death Failed");
+                }
                 else
-                    throw new Exception("Client Death Failed");
+                    throw new Exception("Client Death Ineligible");
             }
             catch (Exception ex)
             {
@@ -315,7 +319,7 @@ namespace InsuranceBackend.Services
                 _context.Premia.Add(new Premium
                 {
                     ClientPolicyId = premium.ClientPolicyId,
-                    DateOfCollection = premium.DateOfCollection,
+                    DateOfCollection = DateTime.Now.ToShortDateString(),
                     PremiumId = premium.PremiumId,
                     Penalty = premium.Penalty,
                     Status = premium.Status
@@ -437,16 +441,16 @@ namespace InsuranceBackend.Services
                 else
                     throw new Exception("No Policy Term Found");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                _logger.LogError(ex,ex.Message);
+                _logger.LogError(ex, ex.Message);
                 return new PolicyTermModel();
             }
         }
 
         public async Task<List<PolicyModel>> GetPolicies(int companyId)
         {
-            try 
+            try
             {
                 var result = await _context.Policies.Where(a => a.CompanyId == companyId && a.Status == StatusEnum.Active).ToListAsync();
                 return [.. result.Select(x => new PolicyModel
@@ -476,8 +480,9 @@ namespace InsuranceBackend.Services
 
         private bool ValidateClientPolicy(int? clientPolicyId)
         {
-            return _context.ClientPolicies.FirstOrDefault(cp => cp.ClientPolicyId == clientPolicyId)
-                != null;
+
+            return (_context.ClientPolicies.FirstOrDefault(cp => cp.ClientPolicyId == clientPolicyId)
+                != null && _context.Payments.Where(x => x.ClientPolicyId == clientPolicyId).Any());
         }
     }
 }

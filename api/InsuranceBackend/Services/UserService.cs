@@ -1,31 +1,31 @@
 ﻿using InsuranceBackend.Models;
 using Microsoft.Data.SqlClient;
-using InsuranceBackend.Database;
+using InsuranceBackend.Services.Contracts;
 
 namespace InsuranceBackend.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private InsuranceDbContext _context;
 
-        public UserService()
+        public UserService(InsuranceDbContext dbContext)
         {
-            _context = new InsuranceDbContext();
+            _context = dbContext;
         }
 
-        public UserModel GetUserByName(string userName)
+        public User GetUserByName(string userName)
         {
             var validUser = _context.Users.FirstOrDefault(u => u.UserName == userName);
             return validUser;
         }
 
-        public UserModel? GetUser(int userID)
+        public User? GetUser(int userID)
         {
             var validUser = _context.Users.FirstOrDefault(u => u.UserId == userID);
             return validUser;
         }
 
-        public UserModel AddUser(UserModel user)
+        public User AddUser(User user)
         {
             var test =_context.Users.FirstOrDefault(u => u.UserName == user.UserName);
             if (test == null)
@@ -37,13 +37,13 @@ namespace InsuranceBackend.Services
             else return test;
         }
 
-        public void DeleteUser(UserModel user)
+        public void DeleteUser(User user)
         {
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
 
-        public UserModel UpdateUser(UserModel user)
+        public User UpdateUser(User user)
         {
             var dbuser = _context.Users.FirstOrDefault(u => u.UserId == user.UserId);
             var testuser = _context.Users.FirstOrDefault(u => u.UserName == user.UserName);

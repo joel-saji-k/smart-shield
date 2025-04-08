@@ -1,7 +1,9 @@
 using InsuranceBackend.Models;
 using InsuranceBackend.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -11,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<InsuranceDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddProjectServices();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(o => o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

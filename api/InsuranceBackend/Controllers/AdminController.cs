@@ -75,11 +75,11 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetAllPolicies")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(int companyId)
         {
             try
             {
-                var result = await _adminService.GetAllPolicies();
+                var result = await _adminService.GetAllPolicies(companyId);
                 return Ok(result);
             }
             catch (Exception ex)

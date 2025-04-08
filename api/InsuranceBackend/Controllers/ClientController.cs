@@ -1,5 +1,7 @@
 ﻿using InsuranceBackend.Models;
 using InsuranceBackend.Services;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,16 +9,10 @@ namespace InsuranceBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientController : ControllerBase
+    public class ClientController(IClientService clientService, IUserService userService) : ControllerBase
     {
-        ClientService _clientService;
-        UserService _userService;
-
-        public ClientController()
-        {
-            _clientService = new ClientService();
-            _userService = new UserService();
-        }
+        IClientService _clientService = clientService;
+        IUserService _userService = userService;
 
         [HttpGet]
         [Route("GetClient")]
@@ -38,7 +34,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddNominee")]
         public IActionResult AddNominee()
         {
-            NomineeModel nominee = new NomineeModel()
+            Nominee nominee = new()
             {
                 NomineeName = Request.Form["nomineeName"],
                 PhoneNum = Request.Form["phoneNum"],
@@ -56,7 +52,16 @@ namespace InsuranceBackend.Controllers
         public IEnumerable<NomineeModel> GetNominees(int clientId)
         {
             var nominees = _clientService.ViewClientNominees(clientId);
-            return nominees;
+            return nominees.Select(x => new NomineeModel
+            {
+                Address = x.Address,
+                ClientId = x.ClientId,
+                NomineeId = x.NomineeId,
+                NomineeName = x.NomineeName,
+                PhoneNum = x.PhoneNum,
+                Relation = x.Relation
+
+            });
         }
 
         [HttpGet]
@@ -81,7 +86,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetTypes")]
-        public IEnumerable<PolicyTypeModel> GetTypes()
+        public IEnumerable<PolicyType> GetTypes()
         {
             return _clientService.GetTypes();
         }
@@ -112,7 +117,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddClientPolicy")]
         public IActionResult AddClientPolicy()
         {
-            ClientPolicyModel clientPolicy =
+            ClientPolicy clientPolicy =
                 new()
                 {
                     ClientId = int.Parse(Request.Form["clientId"]),
@@ -132,16 +137,16 @@ namespace InsuranceBackend.Controllers
         [Route("makePayment")]
         public IActionResult MakePayment()
         {
-            PaymentModel payment =
+            Payment payment =
                 new()
                 {
                     ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
                     TransactionId = Request.Form["transactionId"],
                     Time = Request.Form["time"],
-                    Amount = int.Parse(Request.Form["amount"]),                        
+                    Amount = int.Parse(Request.Form["amount"]),
                     Status = Enum.PaymentStatusEnum.Processing
                 };
-            if (int.Parse(Request.Form["penalty"]) == 0 )
+            if (int.Parse(Request.Form["penalty"]) == 0)
                 return Ok(_clientService.MakePayment(payment, 0));
             else
                 return Ok(_clientService.MakePayment(payment, 1));
@@ -149,7 +154,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("ViewMaturity")]
-        public IEnumerable<MaturityModel> ViewMaturities(int clientId)
+        public IEnumerable<Maturity> ViewMaturities(int clientId)
         {
             return _clientService.ViewMaturities(clientId);
         }
@@ -164,7 +169,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetTerms")]
-        public IEnumerable<PolicyTermModel> GetTerms(int policyId)
+        public IEnumerable<PolicyTerm> GetTerms(int policyId)
         {
             var res = _clientService.GetPterms(policyId);
             return res;
@@ -179,21 +184,21 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetMaturities")]
-        public IEnumerable<MaturityModel> GetMaturities(int clientId)
+        public IEnumerable<Maturity> GetMaturities(int clientId)
         {
             return _clientService.GetMaturities(clientId);
         }
 
         [HttpGet]
         [Route("GetPolicyterm")]
-        public IEnumerable<PolicyTermModel> GetPterms(int policytermId)
+        public IEnumerable<PolicyTerm> GetPterms(int policytermId)
         {
             return _clientService.GetPterms(policytermId);
         }
 
         [HttpGet]
         [Route("GetPenalties")]
-        public IEnumerable<PremiumModel> GetPenalties(int clientPolicyId)
+        public IEnumerable<Premium> GetPenalties(int clientPolicyId)
         {
             return _clientService.ViewPenalties(clientPolicyId);
         }

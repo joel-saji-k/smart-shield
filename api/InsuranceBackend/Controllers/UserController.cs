@@ -11,34 +11,27 @@ using InsuranceBackend.Models;
 using Microsoft.Net.Http.Headers;
 using System.Numerics;
 using Azure.Core;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 
 namespace Insurance.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController(IClientService clientService, IUserService userService, ICompanyService companyService, IAgentService agentService, InsuranceDbContext dbContext) : ControllerBase
     {
-        readonly ClientService _clientService;
-        readonly UserService _userService;
-        readonly CompanyService _companyService;
-        readonly AgentService _agentService;
-        readonly InsuranceDbContext _dbContext;
-
-        public UserController()
-        {
-            _clientService = new ClientService();
-            _agentService = new AgentService();
-            _companyService = new CompanyService();
-            _userService = new UserService();
-            _dbContext = new();
-        }
+        readonly IClientService _clientService = clientService;
+        readonly IUserService _userService = userService;
+        readonly ICompanyService _companyService = companyService;
+        readonly IAgentService _agentService = agentService;
+        readonly InsuranceDbContext _dbContext = dbContext;
 
         //Register
         [HttpPost]
         [Route("Register")]
         public IActionResult Register()
         {
-            UserModel user =
+            User user =
                 new()
                 {                   
                     UserName = Request.Form["UserName"],
@@ -89,7 +82,7 @@ namespace Insurance.Controllers
                         {
                             case UserTypeEnum.Client:
                             {
-                                ClientModel client = new();
+                                Client client = new();
                                 var dbuser = _userService.GetUserByName(user.UserName);
                                 if (dbuser != null)
                                 {
@@ -110,7 +103,7 @@ namespace Insurance.Controllers
                             }
                             case UserTypeEnum.Agent:
                             {
-                                Agent agent = new();
+                                AgentModel agent = new();
                                 var dbagent = _userService.GetUserByName(user.UserName);
                                 if (dbagent != null)
                                 {
@@ -255,7 +248,7 @@ namespace Insurance.Controllers
 
         [HttpPost]
         [Route("Feed")]
-        public IActionResult FeedPost(FeedbackModel feedback)
+        public IActionResult FeedPost(Feedback feedback)
         {
             _dbContext.Feedbacks.Add(feedback);
             _dbContext.SaveChanges();
@@ -281,7 +274,7 @@ namespace Insurance.Controllers
         [Route("UpdateUser")]
         public IActionResult UpdateUser()
         {
-            UserModel dbuser =
+            User dbuser =
                 new()
                 {
                     UserName = Request.Form["userName"],

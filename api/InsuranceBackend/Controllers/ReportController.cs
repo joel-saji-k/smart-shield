@@ -12,19 +12,19 @@ namespace InsuranceBackend.Controllers
     {
         private readonly InsuranceDbContext _dbContext;
 
-        public ReportController()
+        public ReportController(InsuranceDbContext dbContext)
         {
-            _dbContext = new InsuranceDbContext();
+            _dbContext = dbContext;
         }
 
         [HttpGet]
         [Route("Client-Payments")]
-        public IEnumerable<PaymentModel> GetPayments(int clientId)
+        public IEnumerable<Payment> GetPayments(int clientId)
         {
             var clientpolicies = _dbContext.ClientPolicies
                 .Where(cp => cp.ClientId == clientId)
                 .ToList();
-            var payments = new List<PaymentModel>();
+            var payments = new List<Payment>();
             foreach (var clientpolicy in clientpolicies)
             {
                 var a = _dbContext.Payments
@@ -38,7 +38,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Agent-ClientPolicies")]
-        public IEnumerable<ClientPolicyModel> GetClientPolices(int agentId)
+        public IEnumerable<ClientPolicy> GetClientPolices(int agentId)
         {
             var clientpolicies = _dbContext.ClientPolicies
                 .Where(cp => cp.AgentId == agentId)
@@ -48,12 +48,12 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Agent-Payments")]
-        public IEnumerable<PaymentModel> GetPayment(int agentId)
+        public IEnumerable<Payment> GetPayment(int agentId)
         {
             var clientpolicies = _dbContext.ClientPolicies
                 .Where(cp => cp.AgentId == agentId)
                 .ToList();
-            var payments = new List<PaymentModel>();
+            var payments = new List<Payment>();
             foreach (var clientpolicy in clientpolicies)
             {
                 var a = _dbContext.Payments
@@ -67,7 +67,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Company-Policies")]
-        public IEnumerable<PolicyModel> GetCompanyPolicies(int companyId)
+        public IEnumerable<Policy> GetCompanyPolicies(int companyId)
         {
             return _dbContext.Policies.Where(p => p.CompanyId == companyId).ToList();
         }
@@ -87,15 +87,15 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Company-ClientPolicies")]
-        public IEnumerable<ClientPolicyModel> GetClientPolicies(int companyId)
+        public IEnumerable<ClientPolicy> GetClientPolicies(int companyId)
         {
             var policies = _dbContext.Policies.Where(p => p.CompanyId == companyId).ToList();
-            var policyterms = new List<PolicyTermModel>();
+            var policyterms = new List<PolicyTerm>();
             foreach (var policy in policies)
             {
                 policyterms.Add(_dbContext.PolicyTerms.First(pt => pt.PolicyId == policy.PolicyId));
             }
-            var clientpolicies = new List<ClientPolicyModel>();
+            var clientpolicies = new List<ClientPolicy>();
             foreach (var pt in policyterms)
             {
                 var c = _dbContext.ClientPolicies.FirstOrDefault(
@@ -111,17 +111,17 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Admin-Policies")]
-        public IEnumerable<PolicyModel> GetPolicies()
+        public IEnumerable<Policy> GetPolicies()
         {
             return _dbContext.Policies.ToList();
         }
 
         [HttpGet]
         [Route("Admin-Users")]
-        public IEnumerable<UserModel> GetUsers()
+        public IEnumerable<User> GetUsers()
         {
             var allusers = _dbContext.Users.ToList();
-            var users = new List<UserModel>();
+            var users = new List<User>();
             foreach (var user in allusers)
             {
                 if (user.Type != Enum.UserTypeEnum.Admin)
@@ -150,14 +150,14 @@ namespace InsuranceBackend.Controllers
                 }
                 default:
                 {
-                    return Ok(new UserModel() { UserId = 0 });
+                    return Ok(new User() { UserId = 0 });
                 }
             }
         }
 
         [HttpGet]
         [Route("Admin-Maturities")]
-        public IEnumerable<MaturityModel> GetMaturities()
+        public IEnumerable<Maturity> GetMaturities()
         {
             return _dbContext.Maturities.ToList();
         }
@@ -171,7 +171,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("Admin-Feedbacks")]
-        public IEnumerable<FeedbackModel> GetFeeds()
+        public IEnumerable<Feedback> GetFeeds()
         {
             return _dbContext.Feedbacks.ToList();
         }

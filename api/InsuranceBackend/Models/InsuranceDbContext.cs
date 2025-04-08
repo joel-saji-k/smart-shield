@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using InsuranceBackend.Database;
 
 namespace InsuranceBackend.Models;
 
 public partial class InsuranceDbContext : DbContext
 {
-    public InsuranceDbContext() { }
 
     public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options)
         : base(options) { }
@@ -41,11 +39,6 @@ public partial class InsuranceDbContext : DbContext
     public virtual DbSet<Premium> Premia { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        optionsBuilder.UseSqlServer(
-            DBConnection.ConnectionString
-        );
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -434,10 +427,10 @@ public partial class InsuranceDbContext : DbContext
             entity.Property(e => e.PremiumId).HasColumnName("premiumID");
             entity.Property(e => e.ClientPolicyId).HasColumnName("clientPolicyID");
             entity
-                .Property(e => e.DateOfPenalty)
+                .Property(e => e.DateOfCollection)
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .HasColumnName("dateOfPenalty");
+                .HasColumnName("dateOfCollection");
             entity.Property(e => e.Penalty).HasColumnType("money").HasColumnName("penalty");
             entity.Property(e => e.Status).HasColumnName("status");
 

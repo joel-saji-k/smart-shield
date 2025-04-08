@@ -48,7 +48,7 @@ export class AdminViewComponent implements OnInit {
     }
     this.choice = +this.acroute.snapshot.paramMap.get('choice');
     this.policies = [];
-    this.adminservice.ViewAllPolicies().subscribe(
+    this.adminservice.ViewAllPolicies(0).subscribe(
       (policies) => {
         policies.forEach(policy => {
           this.adminservice.ViewPolicyterm(policy.policyId).subscribe(res => {

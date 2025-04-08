@@ -21,13 +21,13 @@ namespace Insurance.Controllers
         [Route("GetPolicyTerms")]
         public async Task<IActionResult> GetTerms(int policytermId)
         {
-            return Ok( await _agentServices.GetPolicyTerm(policytermId));
+            return Ok(await _agentServices.GetPolicyTerm(policytermId));
         }
 
         [HttpGet]
         [Route("GetPolicies")]
         public async Task<IActionResult> Getpolicies(int companyId)
-        {            
+        {
             var res = await _agentServices.GetPolicies(companyId);
             return Ok(res);
         }
@@ -37,7 +37,18 @@ namespace Insurance.Controllers
         public IEnumerable<ClientPolicyModel> GetClientPolicies(int agentId)
         {
             var res = _dbContext.ClientPolicies.Where(cp => cp.AgentId == agentId).ToList();
-            return res;
+            return res.Select(x => new ClientPolicyModel
+            {
+                ClientPolicyId = x.ClientPolicyId,
+                ClientId = x.ClientId,
+                Counter = x.Counter,
+                ExpDate = x.ExpDate,
+                PolicyTermId = x.PolicyTermId,
+                NomineeId = x.NomineeId,
+                Status = x.Status,
+                StartDate = x.StartDate,
+                AgentId = x.AgentId
+            });
         }
 
         [HttpGet]
@@ -97,13 +108,23 @@ namespace Insurance.Controllers
                 .Where(ac => ac.AgentId == agentId && ac.Status == StatusEnum.Active)
                 .Select(a => a.CompanyId)
                 .ToList();
-            List<CompanyModel> result = new();
+            List<Company> result = [];
             foreach (var companyid in companies)
             {
                 var res = _dbContext.Companies.First(c => c.CompanyId == companyid);
                 result.Add(res);
             }
-            return result;
+            return result.Select(x => new CompanyModel
+            {
+                UserId = x.UserId,
+                Status = x.Status,
+                Address = x.Address,
+                CompanyId = x.CompanyId,
+                CompanyName = x.CompanyName,
+                Email = x.Email,
+                PhoneNum = x.PhoneNum,
+                ProfilePic = x.ProfilePic
+            });
         }
 
         [HttpGet]
@@ -142,12 +163,16 @@ namespace Insurance.Controllers
         [Route("ApplyCompany")]
         public IActionResult Apply()
         {
-            AgentCompanyModel agentCompany = new();
-            agentCompany.CompanyId = int.Parse(Request.Form["companyId"]);
-            agentCompany.AgentId = int.Parse(Request.Form["agentId"]);
+            AgentCompany agentCompany = new()
+            {
+                CompanyId = int.Parse(Request.Form["companyId"]),
+                AgentId = int.Parse(Request.Form["agentId"])
+            };
+
             var logagentCompany = _dbContext.AgentCompanies.FirstOrDefault(
                 a => a.AgentId == agentCompany.AgentId
             );
+
             if (logagentCompany != null)
             {
                 if (logagentCompany.CompanyId == agentCompany.CompanyId)
@@ -171,7 +196,7 @@ namespace Insurance.Controllers
         {
             int status = int.Parse(Request.Form["status"]);
             int clientpolicyId = int.Parse(Request.Form["clientpolicyId"]);
-            ClientPolicyModel dbcp = _dbContext.ClientPolicies.FirstOrDefault(
+            ClientPolicy dbcp = _dbContext.ClientPolicies.FirstOrDefault(
                 cp => cp.ClientPolicyId == clientpolicyId
             );
             if (dbcp != null)
@@ -185,18 +210,17 @@ namespace Insurance.Controllers
 
         [HttpPost]
         [Route("AddClientDeath")]
-        public IActionResult AddClientDeath()
+        public async Task<IActionResult> AddClientDeath()
         {
-            ClientDeath clientDeath =
-                new()
-                {
-                    ClientDeathId = 0,
-                    ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
-                    Dod = Request.Form["dod"],
-                    StartDate = Request.Form["startDate"],
-                    ClaimAmount = int.Parse(Request.Form["claimAmount"])
-                };
-            _agentServices.AddClientDeath(clientDeath);
+            var clientDeath =  await _agentServices.AddClientDeath(new ClientDeathModel
+            {
+                ClientDeathId = 0,
+                ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
+                Dod = Request.Form["dod"],
+                StartDate = Request.Form["startDate"],
+                ClaimAmount = int.Parse(Request.Form["claimAmount"])
+            });
+
             return Ok(clientDeath);
         }
 
@@ -217,7 +241,7 @@ namespace Insurance.Controllers
 
         [HttpPost]
         [Route("AddPenalty")]
-        public IActionResult AddPenalty()
+        public async Task<IActionResult> AddPenalty()
         {
             PremiumModel premium =
                 new()
@@ -227,7 +251,7 @@ namespace Insurance.Controllers
                     Penalty = int.Parse(Request.Form["penalty"]),
                     Status = PenaltyStatusEnum.Pending
                 };
-            return Ok(_agentServices.AddPenalty(premium));
+            return Ok(await _agentServices.AddPenalty(premium));
         }
     }
 }

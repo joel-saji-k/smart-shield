@@ -3,17 +3,20 @@ using InsuranceBackend.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using InsuranceBackend.Database;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 
 namespace InsuranceBackend.Services
 {
-    public class ClientService
+    public class ClientService : IClientService
     {
         readonly InsuranceDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public ClientService()
+        public ClientService(IConfiguration configuration, InsuranceDbContext dbContext)
         {
-            _context = new InsuranceDbContext();
+            _context = dbContext;
+            _configuration = configuration;
         }
 
         public Client GetClient(int clientID)
@@ -24,7 +27,7 @@ namespace InsuranceBackend.Services
 
         public Client? GetClientById(int userId)
         {
-           return _context.Clients.FirstOrDefault(c => c.UserId == userId);
+            return _context.Clients.FirstOrDefault(c => c.UserId == userId);
         }
 
         public Client GetClientByName(string userName)
@@ -42,6 +45,7 @@ namespace InsuranceBackend.Services
         {
             var client = GetClient(clientID);
             _context.Clients.Remove(client);
+            _context.SaveChanges();
         }
 
         public Client UpdateClient(int clientID, Client client)
@@ -86,9 +90,21 @@ namespace InsuranceBackend.Services
             return _context.Clients.OrderBy(c => c.ClientId).Last();
         }
 
-        public IEnumerable<ClientPolicy> GetCPolicies(int clientID)
+        public IEnumerable<ClientPolicyModel> GetCPolicies(int clientID)
         {
-            return _context.ClientPolicies.Where(cp => cp.ClientId == clientID).ToList();
+            return _context.ClientPolicies.Where(cp => cp.ClientId == clientID).Select(x => new ClientPolicyModel
+            {
+                AgentId = x.AgentId,
+                ClientId = x.ClientId,
+                ClientPolicyId = x.ClientPolicyId,
+                Counter = x.Counter,
+                ExpDate = x.ExpDate,
+                NomineeId = x.NomineeId,
+                PolicyTermId = x.PolicyTermId,
+                Referral = x.Referral,
+                StartDate = x.StartDate,
+                Status = x.Status,
+            });
         }
 
         public IEnumerable<Maturity> GetMaturities(int clientID)
@@ -129,7 +145,7 @@ namespace InsuranceBackend.Services
             );
             if (testcp == null)
             {
-                var con = new SqlConnection(DBConnection.ConnectionString);
+                var con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
                 con.Open();
                 var cmd = new SqlCommand(
                     "INSERT INTO ClientPolicy(clientID,policyTermID,nomineeID,startDate,expDate,counter,status,referral,agentID) VALUES('"
@@ -198,7 +214,7 @@ namespace InsuranceBackend.Services
             var dba = _context.Agents.First(a => a.AgentId == dbcp.AgentId);
             Premium dbpen = new();
             if (penalty != 0)
-                dbpen = _context.Premia.First(pen =>pen.ClientPolicyId == payment.ClientPolicyId&& pen.Status == PenaltyStatusEnum.Pending);
+                dbpen = _context.Premia.First(pen => pen.ClientPolicyId == payment.ClientPolicyId && pen.Status == PenaltyStatusEnum.Pending);
             if (
                 dbcp.Counter == 0
                 || dbcp.Status != ClientPolicyStatusEnum.Active
@@ -239,7 +255,7 @@ namespace InsuranceBackend.Services
 
         //Views
 
-        public IEnumerable<Policy> GetPolicies(int typeId = 0, int order = 0, int agentId = 0)
+        public IEnumerable<PolicyModel> GetPolicies(int typeId = 0, int order = 0, int agentId = 0)
         {
             List<Policy>? policies = new();
             if (agentId != 0)
@@ -295,7 +311,24 @@ namespace InsuranceBackend.Services
             {
                 policies = _context.Policies.Where(p => p.Status == StatusEnum.Active).ToList();
             }
-            return policies;
+            return policies.Select(x => new PolicyModel
+            {
+                TimePeriod = x.TimePeriod,
+                CompanyId = x.CompanyId,
+                PolicyAmount = x.PolicyAmount,
+                PolicyId = x.PolicyId,
+                PolicyName = x.PolicyName,
+                PolicyTerms = x.PolicyTerms.Select(y => new PolicyTermModel
+                {
+                    PolicyId = y.PolicyId,
+                    Period = y.Period,
+                    PolicyTermId = y.PolicyTermId,
+                    PremiumAmount = y.PremiumAmount,
+                    Terms = y.Terms
+                }),
+                PolicytypeId = x.PolicytypeId,
+                Status = x.Status
+            });
         }
 
         public ClientPolicy GetClientPolicy(int clientpolicyId)
@@ -307,7 +340,8 @@ namespace InsuranceBackend.Services
 
         public PolicyTerm GetPolicyTerm(int policytermId)
         {
-            return _context.PolicyTerms.FirstOrDefault(pt => pt.PolicyTermId == policytermId);
+            var pterm = _context.PolicyTerms.FirstOrDefault(pt => pt.PolicyTermId == policytermId);
+            return pterm;
         }
 
         public IEnumerable<PolicyType> GetTypes()
@@ -315,16 +349,25 @@ namespace InsuranceBackend.Services
             return _context.PolicyTypes.ToList();
         }
 
-        public IEnumerable<Company> GetCompanies()
+        public IEnumerable<CompanyModel> GetCompanies()
         {
-            return _context.Companies.ToList();
+            return [.. _context.Companies.Select(x => new CompanyModel {
+                Status = x.Status,
+                Address = x.Address,
+                CompanyId = x.CompanyId,
+                CompanyName = x.CompanyName,
+                Email = x.Email,
+                PhoneNum = x.PhoneNum,
+                ProfilePic = x.ProfilePic,
+                UserId = x.UserId
+            })];
         }
 
         //Nominees
         public void AddNominee(Nominee nominee)
         {
             ValidateNominee(nominee);
-            var con = new SqlConnection(DBConnection.ConnectionString);
+            var con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
             con.Open();
             var cmd = new SqlCommand(
                 "INSERT INTO Nominees(clientID,nomineeName,relation,address,phoneNum) VALUES('"
@@ -376,7 +419,7 @@ namespace InsuranceBackend.Services
         public IEnumerable<Nominee> ViewClientNominees(int clientID)
         {
             ValidateClient(clientID);
-            using (var con = new SqlConnection(DBConnection.ConnectionString))
+            using (var con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 var cmd = new SqlCommand($"SELECT * FROM Nominees WHERE ClientId={clientID}", con);
                 var adapter = new SqlDataAdapter(cmd);

@@ -1,30 +1,24 @@
 ﻿using InsuranceBackend.Enum;
 using InsuranceBackend.Models;
 using InsuranceBackend.Services;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace InsuranceBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompanyController : ControllerBase
+    public class CompanyController(ICompanyService companyService, IUserService userService, InsuranceDbContext dbContext) : ControllerBase
     {
-        readonly CompanyService _companyService;
-        readonly UserService _userService;
-        readonly InsuranceDbContext _dbContext;
-
-        public CompanyController()
-        {
-            _companyService = new CompanyService();
-            _userService = new UserService();
-            _dbContext = new();
-        }
+        readonly InsuranceDbContext _dbContext = dbContext;
 
         [HttpGet]
         [Route("GetPolicy")]
         public IActionResult GetPolicy(int policyId)
         {
-            PolicyModel policy = _companyService.GetPolicy(policyId);
+            PolicyModel policy = companyService.GetPolicy(policyId);
             return Ok(policy);
         }
 
@@ -45,7 +39,7 @@ namespace InsuranceBackend.Controllers
             if (policy == null)
                 throw new ArgumentNullException(nameof(policy));
 
-            _companyService.AddPolicy(policy);
+            companyService.AddPolicy(policy);
             return Ok(policy);
         }
 
@@ -64,36 +58,36 @@ namespace InsuranceBackend.Controllers
 
             if (policyterm == null)
                 throw new ArgumentNullException(nameof(policyterm));
-            _companyService.AddPolicyTerm(policyterm);
+            companyService.AddPolicyTerm(policyterm);
             return Ok(policyterm);
         }
 
         [HttpGet]
         [Route("ViewPolicies")]
-        public IEnumerable<PolicyModel> ViewPolicies(int companyID)
+        public IEnumerable<Policy> ViewPolicies(int companyID)
         {
-            return _companyService.ViewPolicies(companyID);
+            return companyService.ViewPolicies(companyID);
         }
 
         [HttpGet]
         [Route("ViewAgents")]
-        public IEnumerable<AgentCompanyModel> ViewAgents(int companyId)
+        public IEnumerable<AgentCompany> ViewAgents(int companyId)
         {
-            return _companyService.ViewAgents(companyId);
+            return companyService.ViewAgents(companyId);
         }
 
         [HttpGet]
         [Route("GetCompany")]
         public CompanyModel GetCompany(int userID)
         {
-            return _companyService.GetCompany(userID);
+            return companyService.GetCompany(userID);
         }
 
         [HttpGet]
         [Route("GetAllCompany")]
         public IEnumerable<CompanyModel> GetAll()
         {
-            return _companyService.GetAllCompanies();
+            return companyService.GetAllCompanies();
         }
 
         [HttpPost]
@@ -102,7 +96,7 @@ namespace InsuranceBackend.Controllers
         {
             int id = int.Parse(Request.Form["id"]);
             int status = int.Parse(Request.Form["status"]);
-            AgentCompanyModel agentCompany = new();
+            AgentCompany agentCompany = new();
             agentCompany = _dbContext.AgentCompanies.First(ac => ac.Id == id);
             agentCompany.Status = (StatusEnum)status;
             if (status == 0)
@@ -113,8 +107,27 @@ namespace InsuranceBackend.Controllers
             }
             else
             {
-                agentCompany = _companyService.CreateReferral(agentCompany);
-                _dbContext.AgentCompanies.Update(agentCompany);
+                var a = companyService.CreateReferral(new AgentCompanyModel
+                {
+                    AgentId = agentCompany.AgentId,
+                    Id = id,
+                    CompanyId = agentCompany.CompanyId,
+                    Referral = agentCompany.Referral,
+                    Status = agentCompany.Status
+                });
+                var local = _dbContext.AgentCompanies.Local.FirstOrDefault(e => e.Id == a.Id);
+                if (local != null)
+                {
+                    _dbContext.Entry(local).State = EntityState.Detached;
+                }
+                _dbContext.AgentCompanies.Update(new AgentCompany
+                {
+                    AgentId= a.AgentId,
+                    Id= a.Id,
+                    Status = a.Status,
+                    Referral= a.Referral,
+                    CompanyId= a.CompanyId,
+                });
                 _dbContext.SaveChanges();
                 return Ok(agentCompany);
             }
@@ -126,9 +139,9 @@ namespace InsuranceBackend.Controllers
         {
             int cpid = int.Parse(Request.Form["policyId"]);
             StatusEnum status = (StatusEnum)int.Parse(Request.Form["status"]);
-            var dbpolicy = _companyService.GetPolicy(cpid);
+            var dbpolicy = companyService.GetPolicy(cpid);
             dbpolicy.Status = status;
-            return Ok(_companyService.UpdatePolicy(dbpolicy));
+            return Ok(companyService.UpdatePolicy(dbpolicy));
         }
 
         [HttpGet]

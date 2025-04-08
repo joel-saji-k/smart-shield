@@ -24,21 +24,5 @@ public class ClientPolicyModel
 
     public string Referral { get; set; } = null!;
 
-    public int AgentId { get; set; }
-
-    public virtual Agent Agent { get; set; } = null!;
-
-    public virtual ClientModel Client { get; set; } = null!;
-
-    public virtual ICollection<ClientDeathModel> ClientDeaths { get; } = new List<ClientDeathModel>();
-
-    public virtual ICollection<MaturityModel> Maturities { get; } = new List<MaturityModel>();
-
-    public virtual NomineeModel Nominee { get; set; } = null!;
-
-    public virtual ICollection<PaymentModel> Payments { get; } = new List<PaymentModel>();
-
-    public virtual PolicyTermModel PolicyTerm { get; set; } = null!;
-
-    public virtual ICollection<PremiumModel> Premia { get; } = new List<PremiumModel>();
+    public int AgentId { get; set; }    
 }

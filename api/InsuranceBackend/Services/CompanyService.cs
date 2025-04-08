@@ -3,53 +3,119 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using InsuranceBackend.Models;
 using Microsoft.Data.SqlClient;
-using InsuranceBackend.Database;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 
 namespace InsuranceBackend.Services
 {
-    public class CompanyService
+    public class CompanyService : ICompanyService
     {
         InsuranceDbContext _context;
+        IConfiguration _configuration;
 
-        public CompanyService()
+        public CompanyService(IConfiguration configuration, InsuranceDbContext dbContext)
         {
-            _context = new InsuranceDbContext();
+            _context = dbContext;
+            _configuration = configuration;
         }
 
         public CompanyModel AddCompany(CompanyModel company)
         {
             try
             {
-                _context.Companies.Add(company);
+                _context.Companies.Add(new Company
+                {
+                    Status = company.Status,
+                    Address = company.Address,
+                    Email = company.Email,
+                    PhoneNum = company.PhoneNum,
+                    CompanyId = company.CompanyId,
+                    CompanyName = company.CompanyName,
+                    ProfilePic = company.ProfilePic,
+                    UserId = company.UserId,
+                });
                 _context.SaveChanges();
             }
             catch (Exception)
             {
                 throw new Exception(null);
             }
-            return _context.Companies.OrderBy(c=>c.CompanyId).Last();
+            return _context.Companies.OrderBy(c => c.CompanyId).Select(x => new CompanyModel
+            {
+                UserId = x.UserId,
+                Address = x.Address,
+                ProfilePic = x.ProfilePic,
+                CompanyName = x.CompanyName,
+                CompanyId = x.CompanyId,
+                PhoneNum = x.PhoneNum,
+                Email = x.Email,
+                Status = x.Status
+            }).Last();
         }
 
         public CompanyModel? GetCompany(int userID)
         {
-           return _context.Companies.FirstOrDefault(c => c.UserId == userID);           
+            var result = _context.Companies.FirstOrDefault(c => c.UserId == userID);
+            return new CompanyModel
+            {
+                Address = result.Address,
+                Status = result.Status,
+                Email = result.Email,
+                PhoneNum = result.PhoneNum,
+                CompanyId = result.CompanyId,
+                CompanyName = result.CompanyName,
+                ProfilePic = result.ProfilePic,
+                UserId = result.UserId,
+            };
         }
 
         public CompanyModel GetCompanyByName(string companyName)
         {
-            var res = _context.Companies.FirstOrDefault(c=>c.CompanyName==companyName);
-            return res ?? throw new Exception();
+            var res = _context.Companies.FirstOrDefault(c => c.CompanyName == companyName);
+            return new CompanyModel
+            {
+                Address = res.Address,
+                Status = res.Status,
+                Email = res.Email,
+                PhoneNum = res.PhoneNum,
+                CompanyId = res.CompanyId,
+                CompanyName = res.CompanyName,
+                ProfilePic = res.ProfilePic,
+                UserId = res.UserId,
+            } ?? throw new Exception();
         }
 
         public IEnumerable<CompanyModel> GetAllCompanies()
         {
-            return _context.Companies.ToList();
+            return _context.Companies.ToList().Select(x => new CompanyModel
+            {
+                UserId = x.UserId,
+                Address = x.Address,
+                CompanyName = x.CompanyName,
+                ProfilePic = x.ProfilePic,
+                PhoneNum = x.PhoneNum,
+                CompanyId = x.CompanyId,
+                Email = x.Email,
+                Status = x.Status
+
+            });
         }
 
         public void DeleteCompany(int companyID)
         {
             var dbcompany = GetCompany(companyID);
-            _context.Companies.Remove(dbcompany);
+            _context.Companies.Remove(new Company
+            {
+                CompanyId = companyID,
+                CompanyName = dbcompany.CompanyName,
+                ProfilePic = dbcompany.ProfilePic,
+                Status = dbcompany.Status,
+                Email = dbcompany.Email,
+                PhoneNum = dbcompany.PhoneNum,
+                Address = dbcompany.Address,
+                UserId = dbcompany.UserId,
+
+            });
         }
 
         public CompanyModel UpdateCompany(int companyID, CompanyModel company)
@@ -58,14 +124,34 @@ namespace InsuranceBackend.Services
             {
                 throw new Exception();
             }
-            _context.Companies.Update(company);
+            _context.Companies.Update(new Company
+            {
+                CompanyId = companyID,
+                UserId = company.UserId,
+                Address = company.Address,
+                PhoneNum = company.PhoneNum,
+                Email = company.Email,
+                Status = company.Status,
+                CompanyName = company.CompanyName,
+                ProfilePic = company.ProfilePic,
+            });
             _context.SaveChanges();
             return GetCompany(companyID);
         }
 
         public PolicyModel UpdatePolicy(PolicyModel policy)
         {
-            _context.Policies.Update(policy);
+            _context.Policies.Update(new Policy
+            {
+                Status = policy.Status,
+                PolicyAmount = policy.PolicyAmount,
+                CompanyId = policy.CompanyId,
+                PolicyId = policy.PolicyId,
+                PolicyName = policy.PolicyName,
+                PolicytypeId = policy.PolicytypeId,
+                TimePeriod = policy.TimePeriod,
+
+            });
             var pts = _context.PolicyTerms.Where(pt => pt.PolicyId == policy.PolicyId).ToList();
             foreach (var pt in pts)
             {
@@ -82,7 +168,24 @@ namespace InsuranceBackend.Services
                 }
             }
             _context.SaveChanges();
-            return _context.Policies.OrderBy(p => p.PolicyId).Last();
+            return _context.Policies.OrderBy(p => p.PolicyId).Select(x => new PolicyModel
+            {
+                TimePeriod = x.TimePeriod,
+                CompanyId = x.CompanyId,
+                PolicyAmount = x.PolicyAmount,
+                PolicyId = x.PolicyId,
+                PolicyName = x.PolicyName,
+                Status = x.Status,
+                PolicytypeId = x.PolicytypeId,
+                PolicyTerms = x.PolicyTerms.Select(y => new PolicyTermModel
+                {
+                    PolicyId = y.PolicyId,
+                    Period = y.Period,
+                    PolicyTermId = y.PolicyTermId,
+                    PremiumAmount = y.PremiumAmount,
+                    Terms = y.Terms
+                })
+            }).Last();
         }
 
         public void AddPolicy(PolicyModel policy)
@@ -90,7 +193,7 @@ namespace InsuranceBackend.Services
             ValidatePolicy(policy);
             policy.PolicyId = 0;
             policy.Status = (int)StatusEnum.Inactive;
-            var con = new SqlConnection(DBConnection.ConnectionString);
+            var con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
             con.Open();
             var cmd = new SqlCommand(
                 "INSERT INTO Policies(companyID,policytypeID,policyName,timePeriod,policyAmount,status) VALUES('"
@@ -129,7 +232,7 @@ namespace InsuranceBackend.Services
 
         public void AddPolicyTerm(PolicyTermModel policyTerm)
         {
-            var con = new SqlConnection(DBConnection.ConnectionString);
+            var con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
             con.Open();
             var cmd = new SqlCommand(
                 "INSERT INTO PolicyTerms(policyID,period,terms,premiumAmount) VALUES('"
@@ -149,8 +252,25 @@ namespace InsuranceBackend.Services
 
         public PolicyModel GetPolicy(int policyId)
         {
-            PolicyModel? policy = _context.Policies.FirstOrDefault(p => p.PolicyId == policyId);
-            return policy ?? throw new NullReferenceException();
+            Policy? policy = _context.Policies.FirstOrDefault(p => p.PolicyId == policyId);
+            return new PolicyModel
+            {
+                CompanyId = policy.CompanyId,
+                PolicyAmount = policy.PolicyAmount,
+                PolicyId = policyId,
+                PolicyName = policy.PolicyName,
+                Status = policy.Status,
+                TimePeriod = policy.TimePeriod,
+                PolicytypeId = policy.PolicytypeId,
+                PolicyTerms = policy.PolicyTerms.Select(x => new PolicyTermModel
+                {
+                    Period = x.Period,
+                    PolicyId = x.PolicyId,
+                    PolicyTermId = x.PolicyTermId,
+                    PremiumAmount = x.PremiumAmount,
+                    Terms = x.Terms
+                })
+            } ?? throw new NullReferenceException();
         }
 
         //Status
@@ -168,7 +288,7 @@ namespace InsuranceBackend.Services
         public void ChangeAgentRequest(int agentID, StatusEnum e)
         {
             ValidateAgentRequest(agentID);
-            AgentCompanyModel dbreq =
+            AgentCompany dbreq =
                 _context.AgentCompanies.FirstOrDefault(a => a.AgentId == agentID)
                 ?? throw new ArgumentNullException();
             if (!StatusEnum.IsDefined(typeof(StatusEnum), e))
@@ -181,12 +301,12 @@ namespace InsuranceBackend.Services
         }
 
         //Views
-        public IEnumerable<AgentCompanyModel> ViewAgents(int companyId)
+        public IEnumerable<AgentCompany> ViewAgents(int companyId)
         {
             return _context.AgentCompanies.Where(a => a.CompanyId == companyId).ToList();
         }
 
-        public IEnumerable<PolicyModel> ViewPolicies(int companyID)
+        public IEnumerable<Policy> ViewPolicies(int companyID)
         {
             return _context.Policies.Include(p => p.CompanyId == companyID).ToList();
         }
@@ -196,7 +316,7 @@ namespace InsuranceBackend.Services
             Random random = new();
             var dbcompany = _context.Companies.First(c => c.CompanyId == _agentCompany.CompanyId);
             var dbagent = _context.Agents.First(a => a.AgentId == _agentCompany.AgentId);
-            Retry:
+        Retry:
             _agentCompany.Referral =
                 dbcompany.CompanyName.Replace(" ", "") + dbagent.AgentName.Replace(" ", "") + random.Next(1, 1000);
             var dbac = _context.AgentCompanies.FirstOrDefault(

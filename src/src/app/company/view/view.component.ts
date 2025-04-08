@@ -36,7 +36,7 @@ export class CompanyViewComponent implements OnInit {
       this.companyservice.GetAgents(cid).subscribe(response => {
         this.agents = response;
       });
-      this.adminservice.ViewAllPolicies().subscribe(res => {
+      this.adminservice.ViewAllPolicies(+this.readSession('companyId')).subscribe(res => {
         if (res.find(a => a.companyId == resp.companyId)) {
           this.policies = res;
         }

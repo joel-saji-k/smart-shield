@@ -15,6 +15,7 @@ import { ClientService } from 'src/app/services/Client/client.service';
 export class PaymentComponent implements OnInit {
 
   clientpolicyId: number;
+  policyTermsId : number;
   paymentForm: FormGroup;
   numericInput: string;
   expiryDateInvalid: boolean;
@@ -30,7 +31,8 @@ export class PaymentComponent implements OnInit {
     }
     this.a = false;
     this.clientpolicyId = +this.acroute.snapshot.paramMap.get('clientpolicyId');
-    this.amount = (await this.clientservice.GetTerm(this.clientpolicyId).toPromise()).premiumAmount;
+    this.policyTermsId = (await this.clientservice.GetClientPolicy(this.clientpolicyId).toPromise()).policyTermId;
+    this.amount = (await this.clientservice.GetTerm(this.policyTermsId).toPromise()).premiumAmount;    
     this.paymentForm = new FormGroup({
       cnum: new FormControl('', [Validators.required]),
       cname: new FormControl(null, [Validators.required]),
