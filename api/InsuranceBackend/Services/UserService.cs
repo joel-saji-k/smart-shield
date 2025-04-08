@@ -13,19 +13,19 @@ namespace InsuranceBackend.Services
             _context = new InsuranceDbContext();
         }
 
-        public User GetUserByName(string userName)
+        public UserModel GetUserByName(string userName)
         {
             var validUser = _context.Users.FirstOrDefault(u => u.UserName == userName);
             return validUser;
         }
 
-        public User? GetUser(int userID)
+        public UserModel? GetUser(int userID)
         {
             var validUser = _context.Users.FirstOrDefault(u => u.UserId == userID);
             return validUser;
         }
 
-        public User AddUser(User user)
+        public UserModel AddUser(UserModel user)
         {
             var test =_context.Users.FirstOrDefault(u => u.UserName == user.UserName);
             if (test == null)
@@ -37,13 +37,13 @@ namespace InsuranceBackend.Services
             else return test;
         }
 
-        public void DeleteUser(User user)
+        public void DeleteUser(UserModel user)
         {
             _context.Users.Remove(user);
             _context.SaveChanges();
         }
 
-        public User UpdateUser(User user)
+        public UserModel UpdateUser(UserModel user)
         {
             var dbuser = _context.Users.FirstOrDefault(u => u.UserId == user.UserId);
             var testuser = _context.Users.FirstOrDefault(u => u.UserName == user.UserName);

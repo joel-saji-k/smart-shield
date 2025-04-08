@@ -10,7 +10,7 @@ public partial class Premium
 
     public int ClientPolicyId { get; set; }
 
-    public string DateOfPenalty { get; set; } = null!;
+    public string DateOfCollection { get; set; } = null!;
 
     public decimal Penalty { get; set; }
 

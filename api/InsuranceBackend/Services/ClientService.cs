@@ -7,11 +7,11 @@ using InsuranceBackend.Database;
 
 namespace InsuranceBackend.Services
 {
-    public class ClientServices
+    public class ClientService
     {
         readonly InsuranceDbContext _context;
 
-        public ClientServices()
+        public ClientService()
         {
             _context = new InsuranceDbContext();
         }

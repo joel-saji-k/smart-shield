@@ -24,7 +24,7 @@ namespace InsuranceBackend.Controllers
         [Route("GetPolicy")]
         public IActionResult GetPolicy(int policyId)
         {
-            Policy policy = _companyService.GetPolicy(policyId);
+            PolicyModel policy = _companyService.GetPolicy(policyId);
             return Ok(policy);
         }
 
@@ -32,7 +32,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddPolicy")]
         public IActionResult AddPolicy()
         {
-            Policy policy = new();
+            PolicyModel policy = new();
 
             policy.PolicyId = int.Parse(Request.Form["policyId"]);
             policy.CompanyId = int.Parse(Request.Form["companyId"]);
@@ -53,7 +53,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddPolicyTerm")]
         public IActionResult AddPolicyTerm()
         {
-            PolicyTerm policyterm =
+            PolicyTermModel policyterm =
                 new()
                 {
                     PolicyId = int.Parse(Request.Form["policyId"]),
@@ -70,28 +70,28 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("ViewPolicies")]
-        public IEnumerable<Policy> ViewPolicies(int companyID)
+        public IEnumerable<PolicyModel> ViewPolicies(int companyID)
         {
             return _companyService.ViewPolicies(companyID);
         }
 
         [HttpGet]
         [Route("ViewAgents")]
-        public IEnumerable<AgentCompany> ViewAgents(int companyId)
+        public IEnumerable<AgentCompanyModel> ViewAgents(int companyId)
         {
             return _companyService.ViewAgents(companyId);
         }
 
         [HttpGet]
         [Route("GetCompany")]
-        public Company GetCompany(int userID)
+        public CompanyModel GetCompany(int userID)
         {
             return _companyService.GetCompany(userID);
         }
 
         [HttpGet]
         [Route("GetAllCompany")]
-        public IEnumerable<Company> GetAll()
+        public IEnumerable<CompanyModel> GetAll()
         {
             return _companyService.GetAllCompanies();
         }
@@ -102,7 +102,7 @@ namespace InsuranceBackend.Controllers
         {
             int id = int.Parse(Request.Form["id"]);
             int status = int.Parse(Request.Form["status"]);
-            AgentCompany agentCompany = new();
+            AgentCompanyModel agentCompany = new();
             agentCompany = _dbContext.AgentCompanies.First(ac => ac.Id == id);
             agentCompany.Status = (StatusEnum)status;
             if (status == 0)

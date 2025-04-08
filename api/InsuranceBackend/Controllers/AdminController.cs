@@ -1,109 +1,175 @@
 ﻿using InsuranceBackend.Enum;
 using InsuranceBackend.Models;
-using InsuranceBackend.Services;
+using InsuranceBackend.Services.Contracts;
+using InsuranceBackend.Services.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace InsuranceBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminController :  ControllerBase
-    {
-        private readonly UserService _userService;
-        private readonly AdminService _adminService;
-        private readonly InsuranceDbContext _dbContext;
-
-        public AdminController()
-        {
-            _userService = new();
-            _adminService = new();
-            _dbContext = new();
-        }
+    public class AdminController(IAdminService adminService) : ControllerBase
+    {        
+        private readonly IAdminService _adminService = adminService;
 
         [HttpPut]
         [Route("ChangeUserStatus")]
-        public IActionResult ChangeStatus(User user)
+        public async Task<IActionResult> ChangeStatus(UserModel user)
         {
-            _adminService.ChangeUserStatus(user);
-            return Ok(user);
+            try
+            {
+                await _adminService.ChangeUserStatus(user);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         [Route("AddPolicyType")]
-        public IActionResult AddType(PolicyType policyType)
+        public async Task<IActionResult> AddType(PolicyTypeModel policyType)
         {
-            return Ok(_adminService.AddPolicytype(policyType));
+            try
+            {
+                var result = await _adminService.AddPolicytype(policyType);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetAllTypes")]
-        public IActionResult GetAllTypes()
+        public async Task<IActionResult> GetAllTypes()
         {
-            return Ok(_dbContext.PolicyTypes.ToList());
+            try
+            {
+                var result = await _adminService.GetAllPoliciesTypes();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetAllAgents")]
-        public IActionResult GetAllAgent()
+        public async Task<IActionResult> GetAllAgent()
         {
-            return Ok(_adminService.GetAllAgent());
+            try
+            {
+                var result = await _adminService.GetAllAgent();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetAllPolicies")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_adminService.GetAllPolicies());
+            try
+            {
+                var result = await _adminService.GetAllPolicies();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetAllMaturities")]
-        public IActionResult GetAllMaturities()
+        public async Task<IActionResult> GetAllMaturities()
         {
-            return Ok(_dbContext.Maturities.ToList());
+            try
+            {
+                var result = await _adminService.GetAllMaturities();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetFeedbacks")]
-        public IActionResult GetFeeds()
+        public async Task<IActionResult> GetFeeds()
         {
-            return Ok(_dbContext.Feedbacks.ToList());
+            try
+            {
+                var result = await _adminService.GetAllFeedbacks();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetPolicyTerms")]
-        public IActionResult GetTerms(int policyId)
+        public async Task<IActionResult> GetTerms(int policyId)
         {
-            var res = _dbContext.PolicyTerms.Where(pt => pt.PolicyId == policyId).ToList();
-            return Ok(res);
+            try
+            {
+                var result = await _adminService.GetAllPolicyTerms(policyId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         [Route("ChangePolicyStatus")]
-        public IActionResult UpdatePolicy()
+        public async Task<IActionResult> UpdatePolicy([FromForm] PolicyModel model)
         {
-            Policy policy = new Policy()
+            try
             {
-                PolicyId = int.Parse(Request.Form["policyId"]),
-                CompanyId = int.Parse(Request.Form["companyId"]),
-                PolicytypeId = int.Parse(Request.Form["policytypeId"]),
-                PolicyName = Request.Form["policyName"],
-                TimePeriod = int.Parse(Request.Form["timePeriod"]),
-                PolicyAmount = int.Parse(Request.Form["policyAmount"]),
-                Status = (StatusEnum)int.Parse(Request.Form["status"])
-            };
-
-            _adminService.ChangePolicyStatus(policy);
-            return Ok(policy);
+                await _adminService.ChangePolicyStatus(new PolicyModel
+                {
+                    PolicyId = model.PolicyId,
+                    CompanyId = model.CompanyId,
+                    PolicyAmount = model.PolicyAmount,
+                    PolicyName = model.PolicyName,
+                    PolicytypeId = model.PolicytypeId,
+                    Status = model.Status,
+                    TimePeriod = model.TimePeriod
+                });
+                return Ok(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("GetPolicy")]
-        public IActionResult GetPolicy(int policyId)
+        public async Task<IActionResult> GetPolicy(int policyId)
         {
-            return Ok(_dbContext.Policies.FirstOrDefault(p => p.PolicyId == policyId));
+            try
+            {
+                var result = await _adminService.GetPolicy(policyId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

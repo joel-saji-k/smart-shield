@@ -18,7 +18,7 @@ namespace Insurance.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        readonly ClientServices _clientService;
+        readonly ClientService _clientService;
         readonly UserService _userService;
         readonly CompanyService _companyService;
         readonly AgentService _agentService;
@@ -26,7 +26,7 @@ namespace Insurance.Controllers
 
         public UserController()
         {
-            _clientService = new ClientServices();
+            _clientService = new ClientService();
             _agentService = new AgentService();
             _companyService = new CompanyService();
             _userService = new UserService();
@@ -38,7 +38,7 @@ namespace Insurance.Controllers
         [Route("Register")]
         public IActionResult Register()
         {
-            User user =
+            UserModel user =
                 new()
                 {                   
                     UserName = Request.Form["UserName"],
@@ -89,7 +89,7 @@ namespace Insurance.Controllers
                         {
                             case UserTypeEnum.Client:
                             {
-                                Client client = new();
+                                ClientModel client = new();
                                 var dbuser = _userService.GetUserByName(user.UserName);
                                 if (dbuser != null)
                                 {
@@ -131,7 +131,7 @@ namespace Insurance.Controllers
                             }
                             case UserTypeEnum.Company:
                             {
-                                Company company = new();
+                                CompanyModel company = new();
                                 var dbcompany = _userService.GetUserByName(user.UserName);
                                 if (dbcompany != null)
                                 {
@@ -157,14 +157,14 @@ namespace Insurance.Controllers
             }
             else if (logUser.UserName == user.UserName)
             {
-                return BadRequest(new User() { UserId = -1 });
+                return BadRequest(new UserModel() { UserId = -1 });
             }
             return BadRequest();
         }
 
         [HttpPost]
         [Route("Login")]
-        public IActionResult Login([FromBody] User user)
+        public IActionResult Login([FromBody] UserModel user)
         {
             var logUser = _userService.GetUserByName(user.UserName);
             if (logUser != null)
@@ -255,7 +255,7 @@ namespace Insurance.Controllers
 
         [HttpPost]
         [Route("Feed")]
-        public IActionResult FeedPost(Feedback feedback)
+        public IActionResult FeedPost(FeedbackModel feedback)
         {
             _dbContext.Feedbacks.Add(feedback);
             _dbContext.SaveChanges();
@@ -281,7 +281,7 @@ namespace Insurance.Controllers
         [Route("UpdateUser")]
         public IActionResult UpdateUser()
         {
-            User dbuser =
+            UserModel dbuser =
                 new()
                 {
                     UserName = Request.Form["userName"],

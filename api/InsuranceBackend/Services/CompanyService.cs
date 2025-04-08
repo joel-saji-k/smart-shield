@@ -16,7 +16,7 @@ namespace InsuranceBackend.Services
             _context = new InsuranceDbContext();
         }
 
-        public Company AddCompany(Company company)
+        public CompanyModel AddCompany(CompanyModel company)
         {
             try
             {
@@ -30,18 +30,18 @@ namespace InsuranceBackend.Services
             return _context.Companies.OrderBy(c=>c.CompanyId).Last();
         }
 
-        public Company? GetCompany(int userID)
+        public CompanyModel? GetCompany(int userID)
         {
            return _context.Companies.FirstOrDefault(c => c.UserId == userID);           
         }
 
-        public Company GetCompanyByName(string companyName)
+        public CompanyModel GetCompanyByName(string companyName)
         {
             var res = _context.Companies.FirstOrDefault(c=>c.CompanyName==companyName);
             return res ?? throw new Exception();
         }
 
-        public IEnumerable<Company> GetAllCompanies()
+        public IEnumerable<CompanyModel> GetAllCompanies()
         {
             return _context.Companies.ToList();
         }
@@ -52,7 +52,7 @@ namespace InsuranceBackend.Services
             _context.Companies.Remove(dbcompany);
         }
 
-        public Company UpdateCompany(int companyID, Company company)
+        public CompanyModel UpdateCompany(int companyID, CompanyModel company)
         {
             if (GetCompany(companyID) == null)
             {
@@ -63,7 +63,7 @@ namespace InsuranceBackend.Services
             return GetCompany(companyID);
         }
 
-        public Policy UpdatePolicy(Policy policy)
+        public PolicyModel UpdatePolicy(PolicyModel policy)
         {
             _context.Policies.Update(policy);
             var pts = _context.PolicyTerms.Where(pt => pt.PolicyId == policy.PolicyId).ToList();
@@ -85,7 +85,7 @@ namespace InsuranceBackend.Services
             return _context.Policies.OrderBy(p => p.PolicyId).Last();
         }
 
-        public void AddPolicy(Policy policy)
+        public void AddPolicy(PolicyModel policy)
         {
             ValidatePolicy(policy);
             policy.PolicyId = 0;
@@ -127,7 +127,7 @@ namespace InsuranceBackend.Services
             con.Close();
         }
 
-        public void AddPolicyTerm(PolicyTerm policyTerm)
+        public void AddPolicyTerm(PolicyTermModel policyTerm)
         {
             var con = new SqlConnection(DBConnection.ConnectionString);
             con.Open();
@@ -147,9 +147,9 @@ namespace InsuranceBackend.Services
             con.Close();
         }
 
-        public Policy GetPolicy(int policyId)
+        public PolicyModel GetPolicy(int policyId)
         {
-            Policy? policy = _context.Policies.FirstOrDefault(p => p.PolicyId == policyId);
+            PolicyModel? policy = _context.Policies.FirstOrDefault(p => p.PolicyId == policyId);
             return policy ?? throw new NullReferenceException();
         }
 
@@ -168,7 +168,7 @@ namespace InsuranceBackend.Services
         public void ChangeAgentRequest(int agentID, StatusEnum e)
         {
             ValidateAgentRequest(agentID);
-            AgentCompany dbreq =
+            AgentCompanyModel dbreq =
                 _context.AgentCompanies.FirstOrDefault(a => a.AgentId == agentID)
                 ?? throw new ArgumentNullException();
             if (!StatusEnum.IsDefined(typeof(StatusEnum), e))
@@ -181,17 +181,17 @@ namespace InsuranceBackend.Services
         }
 
         //Views
-        public IEnumerable<AgentCompany> ViewAgents(int companyId)
+        public IEnumerable<AgentCompanyModel> ViewAgents(int companyId)
         {
             return _context.AgentCompanies.Where(a => a.CompanyId == companyId).ToList();
         }
 
-        public IEnumerable<Policy> ViewPolicies(int companyID)
+        public IEnumerable<PolicyModel> ViewPolicies(int companyID)
         {
             return _context.Policies.Include(p => p.CompanyId == companyID).ToList();
         }
 
-        public AgentCompany CreateReferral(AgentCompany _agentCompany)
+        public AgentCompanyModel CreateReferral(AgentCompanyModel _agentCompany)
         {
             Random random = new();
             var dbcompany = _context.Companies.First(c => c.CompanyId == _agentCompany.CompanyId);
@@ -208,7 +208,7 @@ namespace InsuranceBackend.Services
         }
 
         //Validations
-        private void ValidatePolicy(Policy policy)
+        private void ValidatePolicy(PolicyModel policy)
         {
             var policytypeID =
                 _context.PolicyTypes.Select(p => p.PolicytypeId == policy.PolicytypeId)

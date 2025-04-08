@@ -1,44 +1,40 @@
 ﻿using InsuranceBackend.Enum;
 using InsuranceBackend.Models;
 using InsuranceBackend.Services;
+using InsuranceBackend.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using InsuranceBackend.Services.DTO;
+using System.Threading.Tasks;
 
 namespace Insurance.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AgentController : ControllerBase
+    public class AgentController(IAgentService agentService, IUserService userService, InsuranceDbContext dbContext) : ControllerBase
     {
-        AgentService _agentServices;
-        UserService _userService;
-        InsuranceDbContext _dbContext;
-
-        public AgentController()
-        {
-            _agentServices = new AgentService();
-            _userService = new UserService();
-            _dbContext = new InsuranceDbContext();
-        }
+        private readonly IAgentService _agentServices = agentService;
+        private readonly IUserService _userService = userService;
+        private readonly InsuranceDbContext _dbContext = dbContext;
 
         [HttpGet]
         [Route("GetPolicyTerms")]
-        public IActionResult GetTerms(int policytermId)
+        public async Task<IActionResult> GetTerms(int policytermId)
         {
-            return Ok(_dbContext.PolicyTerms.FirstOrDefault(pt => pt.PolicyTermId == policytermId));
+            return Ok( await _agentServices.GetPolicyTerm(policytermId));
         }
 
         [HttpGet]
         [Route("GetPolicies")]
-        public IEnumerable<Policy> Getpolicies(int companyId)
-        {
-            var res = _dbContext.Policies.Where(a => a.CompanyId == companyId).ToList();
-            return res;
+        public async Task<IActionResult> Getpolicies(int companyId)
+        {            
+            var res = await _agentServices.GetPolicies(companyId);
+            return Ok(res);
         }
 
         [HttpGet]
         [Route("GetClientPolicies")]
-        public IEnumerable<ClientPolicy> GetClientPolicies(int agentId)
+        public IEnumerable<ClientPolicyModel> GetClientPolicies(int agentId)
         {
             var res = _dbContext.ClientPolicies.Where(cp => cp.AgentId == agentId).ToList();
             return res;
@@ -95,13 +91,13 @@ namespace Insurance.Controllers
 
         [HttpGet]
         [Route("GetCompanies")]
-        public IEnumerable<Company> GetCompaniesby(int agentId)
+        public IEnumerable<CompanyModel> GetCompaniesby(int agentId)
         {
             var companies = _dbContext.AgentCompanies
                 .Where(ac => ac.AgentId == agentId && ac.Status == StatusEnum.Active)
                 .Select(a => a.CompanyId)
                 .ToList();
-            List<Company> result = new();
+            List<CompanyModel> result = new();
             foreach (var companyid in companies)
             {
                 var res = _dbContext.Companies.First(c => c.CompanyId == companyid);
@@ -112,7 +108,7 @@ namespace Insurance.Controllers
 
         [HttpGet]
         [Route("GetClients")]
-        public IEnumerable<Client> GetClients(int agentId)
+        public IEnumerable<ClientModel> GetClients(int agentId)
         {
             var clients = _dbContext.ClientPolicies
                 .Where(cp => cp.AgentId == agentId)
@@ -127,14 +123,26 @@ namespace Insurance.Controllers
                     )
                 );
             }
-            return result;
+            return result.Select(x => new ClientModel
+            {
+                ClientId = x.ClientId,
+                Status = x.Status,
+                Address = x.Address,
+                ClientName = x.ClientName,
+                Dob = x.Dob,
+                Email = x.Email,
+                Gender = x.Gender,
+                PhoneNum = x.PhoneNum,
+                ProfilePic = x.ProfilePic,
+                UserId = x.UserId
+            });
         }
 
         [HttpPost]
         [Route("ApplyCompany")]
         public IActionResult Apply()
         {
-            AgentCompany agentCompany = new();
+            AgentCompanyModel agentCompany = new();
             agentCompany.CompanyId = int.Parse(Request.Form["companyId"]);
             agentCompany.AgentId = int.Parse(Request.Form["agentId"]);
             var logagentCompany = _dbContext.AgentCompanies.FirstOrDefault(
@@ -163,7 +171,7 @@ namespace Insurance.Controllers
         {
             int status = int.Parse(Request.Form["status"]);
             int clientpolicyId = int.Parse(Request.Form["clientpolicyId"]);
-            ClientPolicy dbcp = _dbContext.ClientPolicies.FirstOrDefault(
+            ClientPolicyModel dbcp = _dbContext.ClientPolicies.FirstOrDefault(
                 cp => cp.ClientPolicyId == clientpolicyId
             );
             if (dbcp != null)
@@ -196,7 +204,7 @@ namespace Insurance.Controllers
         [Route("AddMaturity")]
         public IActionResult AddMaturity()
         {
-            Maturity maturity =
+            MaturityModel maturity =
                 new()
                 {
                     ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
@@ -211,11 +219,11 @@ namespace Insurance.Controllers
         [Route("AddPenalty")]
         public IActionResult AddPenalty()
         {
-            Premium premium =
+            PremiumModel premium =
                 new()
                 {
                     ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
-                    DateOfPenalty = Request.Form["dateOfPenalty"],
+                    DateOfCollection = Request.Form["dateOfCollection"],
                     Penalty = int.Parse(Request.Form["penalty"]),
                     Status = PenaltyStatusEnum.Pending
                 };

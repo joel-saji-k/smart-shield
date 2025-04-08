@@ -9,12 +9,12 @@ namespace InsuranceBackend.Controllers
     [ApiController]
     public class ClientController : ControllerBase
     {
-        ClientServices _clientService;
+        ClientService _clientService;
         UserService _userService;
 
         public ClientController()
         {
-            _clientService = new ClientServices();
+            _clientService = new ClientService();
             _userService = new UserService();
         }
 
@@ -38,7 +38,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddNominee")]
         public IActionResult AddNominee()
         {
-            Nominee nominee = new Nominee()
+            NomineeModel nominee = new NomineeModel()
             {
                 NomineeName = Request.Form["nomineeName"],
                 PhoneNum = Request.Form["phoneNum"],
@@ -53,7 +53,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("ViewNominee")]
-        public IEnumerable<Nominee> GetNominees(int clientId)
+        public IEnumerable<NomineeModel> GetNominees(int clientId)
         {
             var nominees = _clientService.ViewClientNominees(clientId);
             return nominees;
@@ -61,7 +61,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("ViewPolicies")]
-        public IEnumerable<Policy> GetPolicies(int policytypeId = 0, int agentId = 0, int order = 0)
+        public IEnumerable<PolicyModel> GetPolicies(int policytypeId = 0, int agentId = 0, int order = 0)
         {
             if (policytypeId != 0 && order != 0)
             {
@@ -81,14 +81,14 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetTypes")]
-        public IEnumerable<PolicyType> GetTypes()
+        public IEnumerable<PolicyTypeModel> GetTypes()
         {
             return _clientService.GetTypes();
         }
 
         [HttpGet]
         [Route("GetCompanies")]
-        public IEnumerable<Company> GetCompanies()
+        public IEnumerable<CompanyModel> GetCompanies()
         {
             return _clientService.GetCompanies();
         }
@@ -112,7 +112,7 @@ namespace InsuranceBackend.Controllers
         [Route("AddClientPolicy")]
         public IActionResult AddClientPolicy()
         {
-            ClientPolicy clientPolicy =
+            ClientPolicyModel clientPolicy =
                 new()
                 {
                     ClientId = int.Parse(Request.Form["clientId"]),
@@ -132,7 +132,7 @@ namespace InsuranceBackend.Controllers
         [Route("makePayment")]
         public IActionResult MakePayment()
         {
-            Payment payment =
+            PaymentModel payment =
                 new()
                 {
                     ClientPolicyId = int.Parse(Request.Form["clientPolicyId"]),
@@ -149,7 +149,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("ViewMaturity")]
-        public IEnumerable<Maturity> ViewMaturities(int clientId)
+        public IEnumerable<MaturityModel> ViewMaturities(int clientId)
         {
             return _clientService.ViewMaturities(clientId);
         }
@@ -164,7 +164,7 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetTerms")]
-        public IEnumerable<PolicyTerm> GetTerms(int policyId)
+        public IEnumerable<PolicyTermModel> GetTerms(int policyId)
         {
             var res = _clientService.GetPterms(policyId);
             return res;
@@ -172,28 +172,28 @@ namespace InsuranceBackend.Controllers
 
         [HttpGet]
         [Route("GetClientPolicies")]
-        public IEnumerable<ClientPolicy> GetClientPolicies(int clientId)
+        public IEnumerable<ClientPolicyModel> GetClientPolicies(int clientId)
         {
             return _clientService.GetCPolicies(clientId);
         }
 
         [HttpGet]
         [Route("GetMaturities")]
-        public IEnumerable<Maturity> GetMaturities(int clientId)
+        public IEnumerable<MaturityModel> GetMaturities(int clientId)
         {
             return _clientService.GetMaturities(clientId);
         }
 
         [HttpGet]
         [Route("GetPolicyterm")]
-        public IEnumerable<PolicyTerm> GetPterms(int policytermId)
+        public IEnumerable<PolicyTermModel> GetPterms(int policytermId)
         {
             return _clientService.GetPterms(policytermId);
         }
 
         [HttpGet]
         [Route("GetPenalties")]
-        public IEnumerable<Premium> GetPenalties(int clientPolicyId)
+        public IEnumerable<PremiumModel> GetPenalties(int clientPolicyId)
         {
             return _clientService.ViewPenalties(clientPolicyId);
         }
