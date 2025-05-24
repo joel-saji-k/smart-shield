@@ -1,49 +1,85 @@
-# Roadside Rescue Hub: Fuel & Fix
+# SmartShield: Insurance Management System
 
-Roadside Rescue Hub (RRH) is a web-based platform that provides emergency fuel delivery and mechanic assistance to stranded motorists. This academic project helps users request help using location data, while admins and service providers respond in real time.
+**SmartShield** is a comprehensive web-based insurance management platform that streamlines the operations of insurance companies, agents, and clients. Designed for clarity and efficiency, the system handles policy creation, agent onboarding, client management, claim processing, and more.
 
 ---
 
 ## Features
 
-### ✅ User Side
+### Admin Panel
 
-* Location-based request form (Latitude & Longitude)
-* ⛽ Emergency Fuel Booking
-* Mechanic Booking for vehicle breakdowns
-* Status tracking for requests
-* Responsive web interface
+* Manage insurance companies, agents, and clients
+* Monitor policy issuance and claims
+* Handle maturity and death claim approvals
 
-### ✅ Admin Side
+### Company Panel
 
-* Manage incoming registration requests
-* Track user activity and service status
-* Manage service providers([GitHub][1])
+* Register and manage agents
+* Create and manage policy types
+* View client portfolios
 
-### ✅ Service Provider Side
+### Agent Panel
 
-* Manage Requests
-* Regular updation of fuel amounts
-* View feedbacks([GitHub][2], [GitHub][3])
+* Register clients under one or multiple companies
+* Assign and issue policies
+* Request claim approvals on behalf of clients
+
+### Client Panel
+
+* View and manage active policies
+* Submit premium payments
+* Request death or maturity claims
+
+---
+
+## Technologies Used
+
+* **Frontend**: Angular
+* **Backend**: ASP.NET Core Web API
+* **Database**: Microsoft SQL Server
+* **ORM**: Entity Framework Core
+
+---
+
+## System Architecture
+
+* Modular architecture separating concerns for each actor (Admin, Company, Agent, Client)
+* Uses Entity Framework for database operations and business logic
+* Secure authentication and role-based access management
 
 ---
 
 ## How to Run
 
-1. Place the project folder in your server's root directory (e.g., `htdocs` for XAMPP).
-2. Import the `rrh.sql` file into your MySQL database to set up the necessary tables.
-3. Start your local server (e.g., Apache and MySQL via XAMPP).
-4. Access the application via your browser at `http://localhost/RRH`.
+1. Clone the repository
+2. Configure the database connection string in `appsettings.json`
+3. Run the backend using Visual Studio or CLI:
+
+   ```
+   dotnet run
+   ```
+4. Navigate to the Angular project directory and start the frontend:
+
+   ```
+   npm install
+   ng serve
+   ```
+5. Access the app at `http://localhost:4200`
 
 ---
 
-### Credentials
-Pre-configured login details:
+## Credentials (Sample Data)
 
-Username: admin  
-Password: admin123
+**Admin Login**
+
+* Username: `admin`
+* Password: `admin`
+
+
 
 ## Screenshots
-![444596911-f301764e-4235-437f-adde-f077dfe19d9e 1](https://github.com/user-attachments/assets/f6b25dc2-cd92-4846-a642-75193ff22f2e)
 
-
+![image](https://github.com/user-attachments/assets/bb7ca995-dfd3-4b5c-baef-3d63b2a958b6)
+![image](https://github.com/user-attachments/assets/650c9b70-7b7e-4650-9908-230b1a47864a)
+![image](https://github.com/user-attachments/assets/fd6af858-013e-4025-adcb-05134edd13aa)
+![image](https://github.com/user-attachments/assets/38faa676-dc92-462d-9a67-6afd21de24f5)
