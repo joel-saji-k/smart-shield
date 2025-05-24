@@ -43,3 +43,7 @@ Pre-configured login details:
 Username: admin  
 Password: admin123
 
+## Screenshots
+![444596911-f301764e-4235-437f-adde-f077dfe19d9e 1](https://github.com/user-attachments/assets/f6b25dc2-cd92-4846-a642-75193ff22f2e)
+
+
